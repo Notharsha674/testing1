@@ -43,22 +43,22 @@
         .progress-container { width: 80%; background: #eee; border-radius: 20px; height: 25px; margin: 15px 0; overflow: hidden; }
         .progress-bar { height: 100%; width: 0%; background: linear-gradient(90deg, #FF1493, #FFA500); transition: 0.1s; }
 
-        .poem-text { font-size: 0.95rem; color: #4b0082; line-height: 1.5; font-style: italic; padding: 10px; text-align: center; }
+        .poem-text { font-size: 1rem; color: #4b0082; line-height: 1.5; padding: 10px; text-align: center; font-weight: 500; }
         .letter-img { width: 100%; border-radius: 15px; border: 6px solid white; }
         
         .footer-msg { 
             margin-top: 15px; padding: 12px; font-size: 0.85rem; 
             color: #d10069; background: rgba(255,255,255,0.4); 
-            border-radius: 10px; font-weight: bold; line-height: 1.4; 
+            border-radius: 10px; font-weight: bold;
         }
 
         #mascot-container { position: fixed; bottom: 15px; left: 15px; z-index: 100; display: none; }
         #mascot { width: 70px; border-radius: 15px; border: 3px solid white; }
         #speech-bubble {
-            position: absolute; bottom: 85px; left: 5px; width: 160px;
+            position: absolute; bottom: 85px; left: 5px; width: 160px; height: auto;
             background: white; padding: 10px; border-radius: 15px;
             font-size: 0.8rem; color: #333; box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-            display: none; font-weight: bold;
+            display: none; font-weight: bold; z-index: 101;
         }
 
         .floating { position: absolute; pointer-events: none; z-index: 1; }
@@ -135,30 +135,32 @@
     </div>
 
     <div id="page10" class="container">
-        <h1>Kuk... 🌸</h1>
+        <h1>Happy Birthday Kuk! 🌸</h1>
         <div class="poem-text">
-            I fell for a ghost a soul I’d never seen<br>
-            and built my whole world where your footsteps had been.<br>
-            From __ to ____ I learned your every like<br>
-            turning my heart into a library of your life.<br><br>
-            You are the radiant moon, glowing far above the rest,<br>
-            while I am just a speck of dust failing every test.<br>
-            I’m the (crazy one) who stayed though I don’t quite belong<br>
-            turning my silence into the lyrics of your song.<br><br>
-            I wish for you to be the dream that never quite comes true<br>
-            because I know I’m not the one but I’ll always wait for you.<br>
-            I’ll stay a quiet listener until the very end<br>
-            loving the version of me that was only ever your friend.
+            Finally, your birthday is here! <br>
+            I hope you had fun playing all these small games.<br><br>
+            
+            Honestly, I am so happy to have you in my life.<br>
+            You are a very special person and you deserve the best.<br>
+            I always notice the small things you like,<br>
+            and I'm always here to support you in whatever you do.<br><br>
+
+            Keep shining like the superstar you are.<br>
+            I hope this year brings you so much success and happiness.<br>
+            Don't ever change, because you are perfect just the way you are.<br><br>
+            
+            Happy Birthday once again, to the best person!
         </div>
-        <button class="next-button" onclick="showPage(11)">Reveal my letter ❤️</button>
+        <button class="next-button" onclick="showPage(11)">Click for your gift ❤️</button>
     </div>
 
     <div id="page11" class="container">
+        <button class="next-button" style="background: #8A2BE2; margin-bottom: 15px; font-size: 0.9rem;" onclick="dinoRequest()">Ash wants to ask something... 🦖</button>
         <h1>Happy Birthday!</h1>
-        <img src="letter.jpg" class="letter-img">
+        <img src="letter_image.jpg" class="letter-img">
         <div class="footer-msg">
-            ⚠️ u cant unlock full letter bcz:<br>
-            1. its cringe | 2. fuk u who are reading this exept kuk
+            ✨ This letter is only for Kuk.<br>
+            Hope you liked this small surprise!
         </div>
         <p style="margin-top: 10px; color: #8A2BE2;">恐竜 (Dino)</p>
     </div>
@@ -175,14 +177,52 @@
         function showPage(n) {
             document.querySelectorAll('.container').forEach(c => c.classList.remove('active-page'));
             const p = document.getElementById('page'+n);
-            if(p) p.classList.add('active-page');
+            if(p) {
+                p.style.display = 'flex';
+                p.classList.add('active-page');
+            }
             if(n===5) initHeartHunt();
             if(n===6) initBalloonPop();
             updateBubble(n);
         }
 
+        // DINO REQUEST ANIMATION
+        function dinoRequest() {
+            const mascot = document.getElementById('mascot-container');
+            gsap.to(mascot, {
+                left: '50%',
+                bottom: '50%',
+                xPercent: -50,
+                yPercent: 50,
+                scale: 2.2,
+                duration: 1,
+                ease: "back.out(1.7)"
+            });
+
+            bubble.style.display = 'block';
+            bubble.style.width = '240px'; 
+            bubble.style.bottom = '100px'; 
+            
+            bubble.innerHTML = `
+                Kuk, it was your birthday, I gave my present... 
+                now in return gift I would love a song sang by you! <br><br>
+                <span style="font-size: 0.75rem; color: #666; font-weight: normal;">
+                (I would love to hear what I heard first time baby, you remember? 
+                it's just a request u can ignore this shit)
+                </span>
+                <br><button onclick="closeDino()" style="margin-top:10px; border:none; background:#FF1493; color:white; border-radius:10px; padding:5px 10px; cursor:pointer;">Okay! ❤️</button>
+            `;
+        }
+
+        function closeDino() {
+            const mascot = document.getElementById('mascot-container');
+            gsap.to(mascot, { left: '15px', bottom: '15px', xPercent: 0, yPercent: 0, scale: 1, duration: 1 });
+            bubble.style.width = '160px';
+            bubble.innerHTML = "Happy Birthday!";
+        }
+
         function updateBubble(n) {
-            const msgs = ["", "", "Hit it, Kuk!", "Blow 'em out!", "Grow some oranges!", "Find the red one!", "Pop pop pop!", "I love oranges!!", "Fill the power!", "Break it open!", "Read this...", "Happy Birthday!"];
+            const msgs = ["", "", "Hit it, Kuk!", "Blow 'em out!", "Grow some oranges!", "Find the red one!", "Pop pop pop!", "I love oranges!!", "Fill the power!", "Break it open!", "Best person!", "Happy Birthday!"];
             bubble.innerText = msgs[n] || "Almost there!";
         }
 
@@ -195,9 +235,7 @@
         }
 
         function hitBall() { hits++; document.getElementById('vball-score').innerText=hits+" / 5"; gsap.to("#vball",{y:-100,yoyo:true,repeat:1,duration:0.2}); if(hits===5) showPage(3); }
-
         function checkCandles() { candleCount++; if(candleCount===3) showPage(4); }
-
         function growTree() { 
             treeCount++; 
             const b = document.createElement('span'); 
@@ -238,7 +276,6 @@
         }
 
         function fillEnergy() { energy+=10; document.getElementById('energy-bar').style.width=energy+"%"; if(energy>=100) showPage(9); }
-
         function tapGift() { giftCount+=10; document.getElementById('gift-bar').style.width=giftCount+"%"; gsap.to("#gift",{scale:1.2, duration:0.1, yoyo:true, repeat:1}); if(giftCount>=100) showPage(10); }
 
         function createFloating() {
