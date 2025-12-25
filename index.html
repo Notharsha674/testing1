@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kuk's Orange Birthday Quest!</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.4/gsap.min.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Comic Sans MS', cursive, sans-serif; }
+        
+        body {
+            background: linear-gradient(135deg, #ff9a9e 0%, #fad0c4 100%);
+            height: 100vh; overflow: hidden; display: flex;
+            justify-content: center; align-items: center; position: relative;
+        }
+
+        .container {
+            text-align: center; z-index: 10; padding: 2rem;
+            width: 95%; max-width: 650px; max-height: 85vh;
+            background-color: rgba(255, 255, 255, 0.25);
+            border-radius: 30px; backdrop-filter: blur(15px);
+            box-shadow: 0 8px 32px rgba(255, 105, 180, 0.4);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            display: none; overflow-y: auto;
+        }
+
+        .active-page { display: flex; flex-direction: column; align-items: center; animation: bounce-in 0.8s forwards; }
+
+        h1 { font-size: 2rem; color: #FF1493; text-shadow: 0 0 10px white; margin-bottom: 10px; }
+        .subtitle { color: #8A2BE2; margin-bottom: 15px; font-weight: bold; font-size: 1rem; }
+
+        .next-button {
+            padding: 0.8rem 2.5rem; font-size: 1.2rem;
+            background: linear-gradient(45deg, #FF1493, #8A2BE2);
+            color: white; border: none; border-radius: 50px;
+            cursor: pointer; box-shadow: 0 4px 15px rgba(255, 20, 147, 0.5);
+            transition: 0.3s; margin-top: 10px;
+        }
+
+        .game-canvas { position: relative; width: 100%; height: 250px; background: rgba(255,255,255,0.2); border-radius: 20px; margin: 10px 0; overflow: hidden; }
+        .hunt-item { position: absolute; cursor: pointer; font-size: 2rem; }
+
+        .progress-container { width: 80%; background: #eee; border-radius: 20px; height: 25px; margin: 15px 0; overflow: hidden; }
+        .progress-bar { height: 100%; width: 0%; background: linear-gradient(90deg, #FF1493, #FFA500); transition: 0.1s; }
+
+        .poem-text { font-size: 0.95rem; color: #4b0082; line-height: 1.5; font-style: italic; padding: 10px; text-align: center; }
+        .letter-img { width: 100%; border-radius: 15px; border: 6px solid white; }
+        
+        .footer-msg { 
+            margin-top: 15px; padding: 12px; font-size: 0.85rem; 
+            color: #d10069; background: rgba(255,255,255,0.4); 
+            border-radius: 10px; font-weight: bold; line-height: 1.4; 
+        }
+
+        #mascot-container { position: fixed; bottom: 15px; left: 15px; z-index: 100; display: none; }
+        #mascot { width: 70px; border-radius: 15px; border: 3px solid white; }
+        #speech-bubble {
+            position: absolute; bottom: 85px; left: 5px; width: 160px;
+            background: white; padding: 10px; border-radius: 15px;
+            font-size: 0.8rem; color: #333; box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            display: none; font-weight: bold;
+        }
+
+        .floating { position: absolute; pointer-events: none; z-index: 1; }
+        @keyframes bounce-in { 0% { transform: scale(0.9); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
+    </style>
+</head>
+<body>
+
+    <audio id="birthday-song" loop src="Yellow.mp3"></audio>
+
+    <div id="page1" class="container active-page">
+        <h1>Happy Birthday, Kuk! 🎂🍊</h1>
+        <p class="subtitle">A special 10-step quest for my favorite person.</p>
+        <button class="next-button" onclick="startSurprise()">Start Quest 🦖</button>
+    </div>
+
+    <div id="page2" class="container">
+        <h1>Step 1: Volleyball</h1>
+        <p class="subtitle">Hit it 5 times to warm up!</p>
+        <div id="vball-score" style="font-size: 1.5rem; color: #FF1493;">0 / 5</div>
+        <img id="vball" src="https://img.icons8.com/color/150/volleyball.png" style="width:90px; cursor:pointer;" onclick="hitBall()">
+    </div>
+
+    <div id="page3" class="container">
+        <h1>Step 2: The Wish</h1>
+        <p class="subtitle">Blow out the candles!</p>
+        <div style="font-size: 3.5rem; display: flex; gap: 10px;">
+            <span onclick="this.style.opacity='0.2'; checkCandles()" class="can">🕯️</span>
+            <span onclick="this.style.opacity='0.2'; checkCandles()" class="can">🕯️</span>
+            <span onclick="this.style.opacity='0.2'; checkCandles()" class="can">🕯️</span>
+        </div>
+        <div style="font-size: 5rem;">🎂</div>
+    </div>
+
+    <div id="page4" class="container">
+        <h1>Step 3: The Orange Tree</h1>
+        <p class="subtitle">Tap the tree to grow your favorites!</p>
+        <div onclick="growTree()" style="font-size: 7rem; cursor:pointer; position:relative;">🌳<div id="blooms" style="position:absolute; top:0; width:100%;"></div></div>
+        <p id="tree-count" style="color:#FF1493; margin-top:10px;">Oranges: 0 / 6</p>
+    </div>
+
+    <div id="page5" class="container">
+        <h1>Step 4: The True Heart</h1>
+        <p class="subtitle">Find the sparkly red heart!</p>
+        <div class="game-canvas" id="heart-canvas"></div>
+    </div>
+
+    <div id="page6" class="container">
+        <h1>Step 5: Balloon Pop</h1>
+        <p class="subtitle">Pop 5 balloons!</p>
+        <div class="game-canvas" id="balloon-canvas"></div>
+        <div id="pop-score" style="color:#FF1493; font-weight:bold;">Popped: 0 / 5</div>
+    </div>
+
+    <div id="page7" class="container">
+        <h1>Step 6: Feed the Dino</h1>
+        <p class="subtitle">He wants an orange too! Give him one.</p>
+        <div style="font-size: 5rem; cursor:pointer;" onclick="feedDino()">🍊</div>
+        <p>Click the orange to feed him!</p>
+    </div>
+
+    <div id="page8" class="container">
+        <h1>Step 7: Birthday Energy</h1>
+        <p class="subtitle">Fill the bar for the big reveal!</p>
+        <div class="progress-container"><div id="energy-bar" class="progress-bar"></div></div>
+        <button class="next-button" onclick="fillEnergy()">CLICK! ⚡</button>
+    </div>
+
+    <div id="page9" class="container">
+        <h1>Step 8: Break the Box!</h1>
+        <p class="subtitle">Almost there, Kuk!</p>
+        <div id="gift" onclick="tapGift()" style="font-size: 6rem; cursor:pointer;">🎁</div>
+        <div class="progress-container"><div id="gift-bar" class="progress-bar"></div></div>
+    </div>
+
+    <div id="page10" class="container">
+        <h1>Kuk... 🌸</h1>
+        <div class="poem-text">
+            I fell for a ghost a soul I’d never seen<br>
+            and built my whole world where your footsteps had been.<br>
+            From __ to ____ I learned your every like<br>
+            turning my heart into a library of your life.<br><br>
+            You are the radiant moon, glowing far above the rest,<br>
+            while I am just a speck of dust failing every test.<br>
+            I’m the (crazy one) who stayed though I don’t quite belong<br>
+            turning my silence into the lyrics of your song.<br><br>
+            I wish for you to be the dream that never quite comes true<br>
+            because I know I’m not the one but I’ll always wait for you.<br>
+            I’ll stay a quiet listener until the very end<br>
+            loving the version of me that was only ever your friend.
+        </div>
+        <button class="next-button" onclick="showPage(11)">Reveal my letter ❤️</button>
+    </div>
+
+    <div id="page11" class="container">
+        <h1>Happy Birthday!</h1>
+        <img src="letter.jpg" class="letter-img">
+        <div class="footer-msg">
+            ⚠️ u cant unlock full letter bcz:<br>
+            1. its cringe | 2. fuk u who are reading this exept kuk
+        </div>
+        <p style="margin-top: 10px; color: #8A2BE2;">恐竜 (Dino)</p>
+    </div>
+
+    <div id="mascot-container">
+        <div id="speech-bubble">Happy Birthday, Kuk!</div>
+        <img id="mascot" src="dino.jpg">
+    </div>
+
+    <script>
+        let hits=0, candleCount=0, treeCount=0, popCount=0, energy=0, giftCount=0;
+        const bubble = document.getElementById('speech-bubble');
+
+        function showPage(n) {
+            document.querySelectorAll('.container').forEach(c => c.classList.remove('active-page'));
+            const p = document.getElementById('page'+n);
+            if(p) p.classList.add('active-page');
+            if(n===5) initHeartHunt();
+            if(n===6) initBalloonPop();
+            updateBubble(n);
+        }
+
+        function updateBubble(n) {
+            const msgs = ["", "", "Hit it, Kuk!", "Blow 'em out!", "Grow some oranges!", "Find the red one!", "Pop pop pop!", "I love oranges!!", "Fill the power!", "Break it open!", "Read this...", "Happy Birthday!"];
+            bubble.innerText = msgs[n] || "Almost there!";
+        }
+
+        function startSurprise() { 
+            document.getElementById('birthday-song').play(); 
+            showPage(2); 
+            document.getElementById('mascot-container').style.display='block'; 
+            bubble.style.display='block'; 
+            createFloating(); 
+        }
+
+        function hitBall() { hits++; document.getElementById('vball-score').innerText=hits+" / 5"; gsap.to("#vball",{y:-100,yoyo:true,repeat:1,duration:0.2}); if(hits===5) showPage(3); }
+
+        function checkCandles() { candleCount++; if(candleCount===3) showPage(4); }
+
+        function growTree() { 
+            treeCount++; 
+            const b = document.createElement('span'); 
+            b.innerText = treeCount % 2 === 0 ? "🍊" : "🌸"; 
+            b.style.position="absolute";
+            b.style.left=Math.random()*100+"px"; b.style.top=Math.random()*50+"px";
+            document.getElementById('blooms').appendChild(b);
+            document.getElementById('tree-count').innerText = "Oranges: "+treeCount+" / 6";
+            if(treeCount===6) showPage(5);
+        }
+
+        function initHeartHunt() {
+            const canvas = document.getElementById('heart-canvas'); canvas.innerHTML='';
+            for(let i=0; i<12; i++){
+                const h = document.createElement('div'); h.className="hunt-item"; h.innerText="🖤";
+                h.style.left=Math.random()*85+"%"; h.style.top=Math.random()*80+"%";
+                if(i===5) { h.innerText="❤️"; h.style.filter="drop-shadow(0 0 8px gold)"; h.onclick=()=>showPage(6); }
+                else h.onclick=()=> { h.style.opacity="0.2"; };
+                canvas.appendChild(h);
+            }
+        }
+
+        function initBalloonPop() {
+            const canvas = document.getElementById('balloon-canvas'); canvas.innerHTML='';
+            for(let i=0; i<8; i++){
+                const b = document.createElement('div'); b.className="hunt-item"; b.innerText="🎈";
+                b.style.left=Math.random()*85+"%"; b.style.top="260px";
+                canvas.appendChild(b);
+                gsap.to(b, { y: -300, duration: Math.random()*3+2, repeat: -1, delay: i*0.5 });
+                b.onclick = () => { b.innerText="💥"; popCount++; document.getElementById('pop-score').innerText=`Popped: ${popCount} / 5`; if(popCount===5) showPage(7); setTimeout(()=>b.remove(), 200); };
+            }
+        }
+
+        function feedDino() { 
+            gsap.to("#mascot",{scale:1.4, duration:0.2, yoyo:true, repeat:1}); 
+            bubble.innerText="I LOVE ORANGES!"; 
+            setTimeout(()=>showPage(8), 1000); 
+        }
+
+        function fillEnergy() { energy+=10; document.getElementById('energy-bar').style.width=energy+"%"; if(energy>=100) showPage(9); }
+
+        function tapGift() { giftCount+=10; document.getElementById('gift-bar').style.width=giftCount+"%"; gsap.to("#gift",{scale:1.2, duration:0.1, yoyo:true, repeat:1}); if(giftCount>=100) showPage(10); }
+
+        function createFloating() {
+            const syms = ['✨', '🍊', '❤️'];
+            for(let i=0; i<25; i++) {
+                const e = document.createElement('div'); e.className='floating'; 
+                e.innerText= syms[Math.floor(Math.random()*syms.length)];
+                e.style.left=Math.random()*100+"vw"; e.style.top="-50px"; document.body.appendChild(e);
+                gsap.to(e, {y:window.innerHeight+100, duration:Math.random()*5+5, repeat:-1, delay:Math.random()*5});
+            }
+        }
+    </script>
+</body>
+</html>
