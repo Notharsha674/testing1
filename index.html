@@ -49,7 +49,7 @@
         #mascot-container { position: fixed; bottom: 15px; left: 15px; z-index: 1000; display: none; }
         #mascot { width: 70px; border-radius: 15px; border: 3px solid white; cursor: pointer; }
         #speech-bubble {
-            position: absolute; bottom: 85px; left: 0; width: 170px;
+            position: absolute; bottom: 85px; left: 0; width: 180px;
             background: white; padding: 12px; border-radius: 15px;
             font-size: 0.8rem; color: #333; box-shadow: 0 5px 15px rgba(0,0,0,0.1);
             display: none; font-weight: bold; border: 2px solid #FF1493;
@@ -214,11 +214,11 @@
 
         function dinoRequest() {
             song.pause(); baby.play();
-            bubble.style.width = '220px';
-            bubble.innerHTML = `Kuk, birthday tax! 🎤 <br> I want a song sang by you! <br><br> <span style="font-size:0.6rem;">(I want to hear what I heard the first time baby... u remember?)</span> <br> <button onclick="closeDino()" style="background:#FF1493; color:white; border:none; padding:5px; border-radius:5px; margin-top:5px; cursor:pointer;">Okay!</button>`;
+            bubble.style.width = '200px';
+            bubble.innerHTML = `Kuk, birthday tax! 🎤 <br> Sing for me? <br><br> I want to hear the song I heard the first time... u remember? <br> <button onclick="closeDino()" style="background:#FF1493; color:white; border:none; padding:5px; border-radius:5px; margin-top:5px; cursor:pointer;">Okay!</button>`;
         }
 
-        function closeDino() { baby.pause(); baby.currentTime=0; song.play(); bubble.style.width = '170px'; bubble.innerText = "Happy Birthday!"; }
+        function closeDino() { baby.pause(); baby.currentTime=0; song.play(); bubble.style.width = '180px'; bubble.innerText = "Happy Birthday!"; }
 
         function createFloating() {
             const syms = ['✨', '🍊', '❤️'];
