@@ -6,7 +6,6 @@
     <title>Kuk's Orange Birthday Quest!</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.4/gsap.min.js"></script>
     <style>
-        /* Base Styles and No-Scroll Layout */
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Comic Sans MS', cursive, sans-serif; }
         
         body {
@@ -38,17 +37,16 @@
             transition: 0.3s; margin-top: 10px; width: 80%;
         }
 
-        /* Game Elements */
         .game-canvas { position: relative; width: 100%; height: 200px; background: rgba(255,255,255,0.2); border-radius: 20px; margin: 10px 0; overflow: hidden; }
         .hunt-item { position: absolute; cursor: pointer; font-size: 2rem; }
+
         .progress-container { width: 80%; background: #eee; border-radius: 20px; height: 20px; margin: 15px 0; overflow: hidden; }
         .progress-bar { height: 100%; width: 0%; background: linear-gradient(90deg, #FF1493, #FFA500); transition: 0.1s; }
 
-        /* Text and Letter Styles */
         .poem-text { font-size: 0.95rem; color: #4b0082; line-height: 1.6; font-weight: 500; padding: 10px; text-align: center; }
         .letter-img { width: 100%; border-radius: 15px; border: 4px solid white; margin-bottom: 15px; }
 
-        /* Restored Warning Box Style */
+        /* The Restored Warning Box Style */
         .warning-box {
             background: rgba(255, 200, 200, 0.7);
             border: 1px solid #FF1493;
@@ -61,11 +59,10 @@
             line-height: 1.4;
         }
         
-        /* Fixed Mascot Position */
         #mascot-container { position: fixed; bottom: 15px; left: 15px; z-index: 1000; display: none; }
         #mascot { width: 70px; border-radius: 15px; border: 3px solid white; cursor: pointer; }
         #speech-bubble {
-            position: absolute; bottom: 85px; left: 0; width: 190px;
+            position: absolute; bottom: 85px; left: 0; width: 180px;
             background: white; padding: 12px; border-radius: 15px;
             font-size: 0.8rem; color: #333; box-shadow: 0 5px 15px rgba(0,0,0,0.1);
             display: none; font-weight: bold; border: 2px solid #FF1493;
@@ -200,11 +197,8 @@
         }
 
         function startSurprise() { song.play(); showPage(2); document.getElementById('mascot-container').style.display='block'; bubble.style.display='block'; createFloating(); }
-        
         function hitBall() { hits++; document.getElementById('vball-score').innerText=hits+" / 5"; gsap.to("#vball",{y:-100,yoyo:true,repeat:1,duration:0.2}); if(hits===5) showPage(3); }
-        
         function checkCandles() { candleCount++; if(candleCount===3) showPage(4); }
-        
         function growTree() { 
             treeCount++; 
             const b = document.createElement('span'); b.innerText = "🍊"; 
@@ -236,12 +230,9 @@
         }
 
         function feedDino() { gsap.to("#mascot",{scale:1.4, duration:0.2, yoyo:true, repeat:1}); bubble.innerText="YUMMY!"; setTimeout(()=>showPage(8), 1000); }
-        
         function fillEnergy() { energy+=10; document.getElementById('energy-bar').style.width=energy+"%"; if(energy>=100) showPage(9); }
-        
         function tapGift() { giftCount+=10; document.getElementById('gift-bar').style.width=giftCount+"%"; if(giftCount>=100) showPage(10); }
 
-        /* Dino Request */
         function dinoRequest() {
             song.pause(); baby.play();
             bubble.style.width = '200px';
