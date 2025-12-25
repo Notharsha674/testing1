@@ -43,7 +43,7 @@
         .progress-container { width: 80%; background: #eee; border-radius: 20px; height: 20px; margin: 15px 0; overflow: hidden; }
         .progress-bar { height: 100%; width: 0%; background: linear-gradient(90deg, #FF1493, #FFA500); transition: 0.1s; }
 
-        .poem-text { font-size: 0.9rem; color: #4b0082; line-height: 1.5; font-style: italic; padding: 5px; text-align: center; }
+        .poem-text { font-size: 0.95rem; color: #4b0082; line-height: 1.6; font-weight: 500; padding: 10px; text-align: center; }
         .letter-img { width: 100%; border-radius: 15px; border: 4px solid white; margin-bottom: 15px; }
         
         #mascot-container { position: fixed; bottom: 15px; left: 15px; z-index: 1000; display: none; }
@@ -65,7 +65,7 @@
     <audio id="baby-song" src="baby_you.mp3"></audio>
 
     <div id="page1" class="container active-page">
-        <h1>Happy Birthday, Kuk! 🎂🍊</h1>
+        <h1>Happy Birthday, Kuk! 🎂</h1>
         <p class="subtitle">A special 10-step quest for my favorite person.</p>
         <button class="next-button" onclick="startSurprise()">Start Quest 🦖</button>
     </div>
@@ -90,7 +90,7 @@
 
     <div id="page4" class="container">
         <h1>Step 3: The Orange Tree</h1>
-        <p class="subtitle">Tap the tree to grow your favorites!</p>
+        <p class="subtitle">Tap the tree to grow oranges!</p>
         <div onclick="growTree()" style="font-size: 7rem; cursor:pointer; position:relative;">🌳<div id="blooms" style="position:absolute; top:0; width:100%;"></div></div>
         <p id="tree-count" style="color:#FF1493; margin-top:10px;">Oranges: 0 / 6</p>
     </div>
@@ -129,23 +129,25 @@
     </div>
 
     <div id="page10" class="container">
-        <h1>Kuk... 🌸</h1>
+        <h1>Happy Birthday Kuk! 🌸</h1>
         <div class="poem-text">
-            I fell for a ghost a soul I’d never seen<br>
-            and built my whole world where your footsteps had been.<br>
-            From __ to ____ I learned your every like<br>
-            turning my heart into a library of your life.<br><br>
-            You are the radiant moon, glowing far above the rest,<br>
-            while I am just a speck of dust failing every test.<br>
-            I’ll stay a quiet listener until the very end<br>
-            loving the version of me that was only ever your friend.
+            Finally, your birthday is here! <br>
+            I hope you had fun playing all these small games.<br><br>
+            Honestly, I am so happy to have you in my life.<br>
+            You are a very special person and you deserve the best.<br>
+            I always notice the small things you like,<br>
+            and I'm always here to support you in whatever you do.<br><br>
+            Keep shining like the superstar you are.<br>
+            I hope this year brings you so much success and happiness.<br>
+            Don't ever change, because you are perfect just the way you are.<br><br>
+            Happy Birthday once again, to the best person!
         </div>
-        <button class="next-button" onclick="showPage(11)">Reveal my letter ❤️</button>
+        <button class="next-button" onclick="showPage(11)">Click for your gift ❤️</button>
     </div>
 
     <div id="page11" class="container">
         <button class="next-button" style="background: #8A2BE2; margin-bottom: 10px; width: 100%;" onclick="dinoRequest()">Ash has a request... 🦖</button>
-        <h1>Happy Birthday!</h1>
+        <h1>For Your Eyes Only</h1>
         <img src="letter.jpg" class="letter-img">
         <p style="color: #8A2BE2; font-weight: bold;">恐竜 (Dino)</p>
     </div>
@@ -171,7 +173,7 @@
         }
 
         function updateBubble(n) {
-            const msgs = ["", "", "Hit it!", "Blow!", "Oranges!", "Find it!", "Pop!", "Feed me!", "Energy!", "Open!", "For you.", "HBD!"];
+            const msgs = ["", "", "Hit it!", "Blow!", "Oranges!", "Find it!", "Pop!", "Feed me!", "Energy!", "Open!", "Happy Bday!", "HBD!"];
             bubble.innerText = msgs[n] || "Almost there!";
         }
 
