@@ -129,6 +129,13 @@
     </div>
 
     <div id="page10" class="container">
+        <h1>For Your Eyes Only</h1>
+        <img src="letter.jpg" class="letter-img">
+        <p style="color: #8A2BE2; font-weight: bold; margin-bottom: 10px;">恐竜 (Dino)</p>
+        <button class="next-button" onclick="showPage(11)">Read Final Message 🌸</button>
+    </div>
+
+    <div id="page11" class="container">
         <h1>Happy Birthday Kuk! 🌸</h1>
         <div class="poem-text">
             Finally, your birthday is here! <br>
@@ -142,14 +149,7 @@
             Don't ever change, because you are perfect just the way you are.<br><br>
             Happy Birthday once again, to the best person!
         </div>
-        <button class="next-button" onclick="showPage(11)">Click for your gift ❤️</button>
-    </div>
-
-    <div id="page11" class="container">
-        <button class="next-button" style="background: #8A2BE2; margin-bottom: 10px; width: 100%;" onclick="dinoRequest()">Ash has a request... 🦖</button>
-        <h1>For Your Eyes Only</h1>
-        <img src="letter.jpg" class="letter-img">
-        <p style="color: #8A2BE2; font-weight: bold;">恐竜 (Dino)</p>
+        <button class="next-button" style="background: #8A2BE2; margin-top: 15px; width: 100%;" onclick="dinoRequest()">Ash has a request... 🦖</button>
     </div>
 
     <div id="mascot-container">
@@ -173,7 +173,8 @@
         }
 
         function updateBubble(n) {
-            const msgs = ["", "", "Hit it!", "Blow!", "Oranges!", "Find it!", "Pop!", "Feed me!", "Energy!", "Open!", "Happy Bday!", "HBD!"];
+            // Adjusted messages slightly for the swap
+            const msgs = ["", "", "Hit it!", "Blow!", "Oranges!", "Find it!", "Pop!", "Feed me!", "Energy!", "Open!", "Secret!", "Happy Bday!"];
             bubble.innerText = msgs[n] || "Almost there!";
         }
 
