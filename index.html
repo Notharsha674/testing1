@@ -42,34 +42,25 @@
         }
 
         .game-box { 
-            position: relative; width: 100%; height: 280px; 
-            background: #111; border-radius: 25px; 
-            overflow: hidden; display: flex; align-items: center; justify-content: center;
+            position: relative; width: 100%; height: 300px; 
+            background: rgba(255,255,255,0.2); border-radius: 25px; 
+            overflow: hidden;
         }
 
-        /* Fixed Flashlight Layers */
-        #flashlight { 
-            position: absolute; width: 150px; height: 150px; 
-            background: radial-gradient(circle, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0) 70%);
-            border-radius: 50%; pointer-events: none; z-index: 8; 
-        }
-        #hidden-dino { 
-            position: absolute; cursor: pointer; font-size: 3.5rem; 
-            z-index: 7; opacity: 0; transition: opacity 0.2s; 
-        }
+        /* Catch Game Styles */
+        #catcher { position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%); font-size: 3rem; touch-action: none; z-index: 15; }
+        .falling-orange { position: absolute; font-size: 2rem; z-index: 10; }
 
-        #glass { width: 80px; height: 120px; border: 4px solid white; border-top: none; border-radius: 0 0 20px 20px; position: relative; overflow: hidden; background: rgba(255,255,255,0.2); }
-        #juice { position: absolute; bottom: 0; width: 100%; height: 0%; background: orange; transition: 0.1s; }
-
+        /* Other Game Styles */
+        #glass { width: 70px; height: 100px; border: 4px solid white; border-top: none; border-radius: 0 0 20px 20px; position: relative; overflow: hidden; }
+        #juice { position: absolute; bottom: 0; width: 100%; height: 0%; background: orange; }
         .maze-wall { position: absolute; background: var(--purple); border-radius: 10px; }
-        #maze-target { position: absolute; bottom: 10px; right: 10px; font-size: 2rem; }
-        #maze-player { width: 45px; height: 45px; position: absolute; top: 10px; left: 10px; z-index: 20; touch-action: none; cursor: grab; }
+        #maze-player { position: absolute; font-size: 2rem; z-index: 20; }
+        .letter-tile { width: 60px; height: 60px; background: white; border-radius: 15px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; font-weight: bold; color: var(--pink); box-shadow: 0 4px 10px rgba(0,0,0,0.1); touch-action: none; }
 
         #mascot-container { position: fixed; bottom: 10px; left: 10px; z-index: 1000; display: none; }
-        #mascot { width: 65px; border-radius: 15px; border: 3px solid white; box-shadow: 0 5px 10px rgba(0,0,0,0.2); }
-        #speech { position: absolute; bottom: 80px; left: 0; background: white; padding: 12px; border-radius: 18px; font-size: 0.8rem; width: 150px; display: none; border: 2px solid var(--pink); font-weight: bold; box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
-
-        .letter-tile { width: 65px; height: 65px; background: white; border-radius: 18px; display: flex; align-items: center; justify-content: center; font-size: 1.8rem; font-weight: bold; color: var(--pink); box-shadow: 0 4px 10px rgba(0,0,0,0.1); touch-action: none; cursor: grab; }
+        #mascot { width: 60px; border-radius: 12px; border: 2px solid white; }
+        #speech { position: absolute; bottom: 70px; left: 0; background: white; padding: 10px; border-radius: 15px; font-size: 0.7rem; width: 140px; display: none; border: 2px solid var(--pink); }
     </style>
 </head>
 <body>
@@ -77,74 +68,67 @@
     <audio id="bg-music" loop src="Yellow.mp3"></audio>
 
     <div id="p1" class="container active-page">
-        <div>
-            <h1>Happy Birthday, Kuk! 🎂</h1>
-            <p class="subtitle">An interactive orange adventure!</p>
-        </div>
+        <div><h1>Happy Birthday, Kuk! 🎂</h1><p class="subtitle">Ready for your quest?</p></div>
         <img src="https://img.icons8.com/bubbles/200/birthday-cake.png" width="150">
-        <button class="btn" onclick="nextPage(2)">START QUEST 🍊</button>
+        <button class="btn" onclick="nextPage(2)">START 🍊</button>
     </div>
 
     <div id="p2" class="container">
-        <h1>Step 1: Fresh Juice</h1>
+        <h1>Step 1: The Juice</h1>
         <p class="subtitle">HOLD the orange to fill the glass!</p>
-        <div class="game-box" style="background: rgba(255,255,255,0.3);">
+        <div class="game-box" style="display:flex; align-items:center; justify-content:center;">
             <div id="glass"><div id="juice"></div></div>
-            <div id="orange-btn" style="font-size: 4.5rem; margin-left: 20px; cursor: pointer;" onmousedown="startSqueeze()" ontouchstart="startSqueeze()" onmouseup="stopSqueeze()" ontouchend="stopSqueeze()">🍊</div>
+            <div id="orange-btn" style="font-size: 4rem; margin-left: 20px;" ontouchstart="startSqueeze()" ontouchend="stopSqueeze()">🍊</div>
         </div>
-        <p id="juice-status" style="font-weight:bold; color:var(--orange);">0% Full</p>
+        <p id="juice-status">0% Full</p>
     </div>
 
     <div id="p3" class="container">
-        <h1>Step 2: Hide & Seek</h1>
-        <p class="subtitle">Move your finger to find the Dino!</p>
-        <div class="game-box" id="search-area" onmousemove="moveLight(event)" ontouchmove="moveLight(event)">
-            <div id="flashlight" style="left: -200px; top: -200px;"></div>
-            <div id="hidden-dino" onclick="nextPage(4)">🦖</div>
+        <h1>Step 2: Orange Catch</h1>
+        <p id="catch-count" class="subtitle">Catch 10 oranges! (0/10)</p>
+        <div class="game-box" id="catch-area">
+            <div id="catcher">🦖</div>
         </div>
     </div>
 
     <div id="p4" class="container">
         <h1>Step 3: The Maze</h1>
-        <p class="subtitle">Drag the heart through the path!</p>
-        <div class="game-box" id="maze-container" style="background: rgba(255,255,255,0.3);">
-            <div class="maze-wall" style="width: 80%; height: 15px; top: 80px; left: 0;"></div>
-            <div class="maze-wall" style="width: 80%; height: 15px; bottom: 100px; right: 0;"></div>
-            <div id="maze-target">🦖</div>
+        <p class="subtitle">Drag the heart to the Dino!</p>
+        <div class="game-box" id="maze-container">
+            <div class="maze-wall" style="width: 80%; height: 10px; top: 70px; left: 0;"></div>
+            <div class="maze-wall" style="width: 80%; height: 10px; bottom: 90px; right: 0;"></div>
+            <div id="maze-target" style="position:absolute; bottom:10px; right:10px; font-size:2rem;">🦖</div>
             <div id="maze-player">❤️</div>
         </div>
     </div>
 
     <div id="p5" class="container">
-        <h1>Step 4: Orange Pops</h1>
-        <p class="subtitle">Pop them all to move on!</p>
-        <div class="game-box" id="bubble-box" style="background: transparent; display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; padding: 15px;"></div>
+        <h1>Step 4: Pop Time!</h1>
+        <p class="subtitle">Pop the orange bubbles!</p>
+        <div id="bubble-box" class="game-box" style="display:grid; grid-template-columns: repeat(4,1fr); gap:10px; padding:15px;"></div>
     </div>
 
     <div id="p6" class="container">
-        <h1>Step 5: Unlock the Name</h1>
-        <p class="subtitle">Drag the letters to spell KUK!</p>
-        <div class="game-box" style="background: transparent; flex-direction: column; gap: 30px;">
-            <div style="display: flex; gap: 10px;" id="drop-zone">
-                <div class="letter-tile" style="border: 3px dashed #ffb6c1; background: rgba(255,255,255,0.5);"></div>
-                <div class="letter-tile" style="border: 3px dashed #ffb6c1; background: rgba(255,255,255,0.5);"></div>
-                <div class="letter-tile" style="border: 3px dashed #ffb6c1; background: rgba(255,255,255,0.5);"></div>
+        <h1>Step 5: Your Name</h1>
+        <p class="subtitle">Drag letters to the boxes!</p>
+        <div class="game-box" style="display:flex; flex-direction:column; justify-content:center; gap:20px;">
+            <div style="display:flex; gap:10px;" id="drop-zone">
+                <div class="letter-tile" style="border:2px dashed #ccc; background:none;"></div>
+                <div class="letter-tile" style="border:2px dashed #ccc; background:none;"></div>
+                <div class="letter-tile" style="border:2px dashed #ccc; background:none;"></div>
             </div>
-            <div style="display: flex; gap: 15px;" id="letter-dock">
-                <div class="letter-tile" id="l1">U</div>
-                <div class="letter-tile" id="l2">K</div>
-                <div class="letter-tile" id="l3">K</div>
+            <div style="display:flex; gap:10px;">
+                <div class="letter-tile draggable-l">K</div>
+                <div class="letter-tile draggable-l">U</div>
+                <div class="letter-tile draggable-l">K</div>
             </div>
         </div>
     </div>
 
     <div id="p7" class="container">
         <h1>Happy Birthday Kuk! 🌸</h1>
-        <div style="overflow-y: auto; font-size: 1rem; color: #444; padding: 10px; line-height: 1.5;">
-            You completed the Orange Quest! 🍊<br><br>
-            Kuk, you are a superstar. I hope this year brings you as much happiness as you give to others. You are perfect just the way you are! ✨
-        </div>
-        <button class="btn" onclick="location.reload()">PLAY AGAIN? 🦖</button>
+        <p style="padding:10px; font-size:0.9rem;">You did it! You caught the oranges, cleared the maze, and proved you're the best. Have the most amazing day ever! 🧡</p>
+        <button class="btn" onclick="location.reload()">REPLAY 🦖</button>
     </div>
 
     <div id="mascot-container">
@@ -153,128 +137,124 @@
     </div>
 
     <script>
+        let score = 0;
         let juiceLevel = 0;
         let squeezeInterval;
-        let bubblesPopped = 0;
+        let caught = 0;
+        let catchInterval;
 
         function nextPage(n) {
-            if(n === 2) { 
-                document.getElementById('bg-music').play();
-                document.getElementById('mascot-container').style.display = 'block';
-                showMascot("Let's go, Kuk! Squeeze the orange!");
-            }
             document.querySelectorAll('.container').forEach(c => c.classList.remove('active-page'));
             document.getElementById('p'+n).classList.add('active-page');
-            
-            if(n === 3) {
-                initSearch();
-                showMascot("Where am I? Use the light!");
+            if(n===2) { 
+                document.getElementById('mascot-container').style.display = 'block';
+                document.getElementById('bg-music').play();
             }
-            if(n === 4) {
-                initMaze();
-                showMascot("Careful! Stay in the lines!");
-            }
-            if(n === 5) initBubbles();
-            if(n === 6) {
-                initScramble();
-                showMascot("Spell your name!");
-            }
+            if(n===3) startCatchGame();
+            if(n===4) initMaze();
+            if(n===5) initBubbles();
+            if(n===6) initScramble();
         }
 
         function showMascot(text) {
             const s = document.getElementById('speech');
-            s.innerText = text;
-            s.style.display = 'block';
-            setTimeout(() => s.style.display = 'none', 4000);
+            s.innerText = text; s.style.display = 'block';
+            setTimeout(() => s.style.display = 'none', 3000);
         }
 
+        // STEP 1 Logic
         function startSqueeze() {
             squeezeInterval = setInterval(() => {
                 if(juiceLevel < 100) {
-                    juiceLevel += 2;
+                    juiceLevel += 3;
                     document.getElementById('juice').style.height = juiceLevel + '%';
                     document.getElementById('juice-status').innerText = juiceLevel + '% Full';
-                    gsap.to("#orange-btn", {scale: 0.85, duration: 0.1});
                 } else {
-                    stopSqueeze();
-                    nextPage(3);
+                    stopSqueeze(); nextPage(3);
                 }
             }, 50);
         }
-        function stopSqueeze() {
-            clearInterval(squeezeInterval);
-            gsap.to("#orange-btn", {scale: 1, duration: 0.1});
-        }
+        function stopSqueeze() { clearInterval(squeezeInterval); }
 
-        function initSearch() {
-            const dino = document.getElementById('hidden-dino');
-            dino.style.left = (20 + Math.random() * 60) + '%';
-            dino.style.top = (20 + Math.random() * 60) + '%';
-        }
-
-        function moveLight(e) {
-            e.preventDefault();
-            const rect = document.getElementById('search-area').getBoundingClientRect();
-            const x = (e.clientX || e.touches[0].clientX) - rect.left;
-            const y = (e.clientY || e.touches[0].clientY) - rect.top;
+        // STEP 2 Logic (NEW CATCH GAME)
+        function startCatchGame() {
+            showMascot("Catch 10 oranges!");
+            const catcher = document.getElementById('catcher');
+            const area = document.getElementById('catch-area');
             
-            gsap.to("#flashlight", {left: x - 75, top: y - 75, duration: 0.1});
+            // Make Dino draggable left/right
+            Draggable.create(catcher, {
+                type: "x", bounds: area,
+            });
 
-            // Check if Dino is inside the light
-            const dino = document.getElementById('hidden-dino');
-            const dx = x - (dino.offsetLeft + 25);
-            const dy = y - (dino.offsetTop + 25);
-            const distance = Math.sqrt(dx*dx + dy*dy);
-
-            if(distance < 70) {
-                dino.style.opacity = "1";
-            } else {
-                dino.style.opacity = "0";
-            }
+            catchInterval = setInterval(() => {
+                if(caught >= 10) {
+                    clearInterval(catchInterval);
+                    nextPage(4);
+                    return;
+                }
+                createOrange();
+            }, 1000);
         }
 
+        function createOrange() {
+            const area = document.getElementById('catch-area');
+            const orange = document.createElement('div');
+            orange.className = 'falling-orange';
+            orange.innerText = '🍊';
+            orange.style.left = Math.random() * (area.offsetWidth - 30) + 'px';
+            orange.style.top = '-40px';
+            area.appendChild(orange);
+
+            gsap.to(orange, {
+                y: 350, duration: 2.5, ease: "none",
+                onUpdate: function() {
+                    const cRect = document.getElementById('catcher').getBoundingClientRect();
+                    const oRect = orange.getBoundingClientRect();
+                    if(!(oRect.right < cRect.left || oRect.left > cRect.right || oRect.bottom < cRect.top || oRect.top > cRect.bottom)) {
+                        caught++;
+                        document.getElementById('catch-count').innerText = `Catch 10 oranges! (${caught}/10)`;
+                        orange.remove();
+                        this.kill();
+                    }
+                },
+                onComplete: () => orange.remove()
+            });
+        }
+
+        // STEP 3 Maze
         function initMaze() {
             Draggable.create("#maze-player", {
-                type: "x,y",
-                bounds: "#maze-container",
+                type: "x,y", bounds: "#maze-container",
                 onDrag: function() {
-                    if (this.hitTest("#maze-target", "50%")) {
-                        this.disable();
-                        nextPage(5);
-                    }
+                    if(this.hitTest("#maze-target", "50%")) { this.disable(); nextPage(5); }
                 }
             });
         }
 
+        // STEP 4 Bubbles
         function initBubbles() {
             const box = document.getElementById('bubble-box');
-            box.innerHTML = '';
+            let popped = 0;
             for(let i=0; i<12; i++) {
                 const b = document.createElement('div');
-                b.style.width = '60px'; b.style.height = '60px';
-                b.style.background = 'radial-gradient(circle at 30% 30%, #FFA500, #FF8C00)';
-                b.style.borderRadius = '50%';
-                b.style.boxShadow = 'inset -5px -5px 10px rgba(0,0,0,0.2), 5px 5px 10px rgba(0,0,0,0.1)';
+                b.style.background = 'orange'; b.style.borderRadius = '50%';
                 b.onclick = function() {
-                    gsap.to(this, {scale: 1.5, opacity: 0, duration: 0.2});
-                    bubblesPopped++;
-                    if(bubblesPopped === 12) nextPage(6);
+                    this.style.visibility = 'hidden'; popped++;
+                    if(popped === 12) nextPage(6);
                 };
                 box.appendChild(b);
             }
         }
 
+        // STEP 5 Scramble
         function initScramble() {
-            Draggable.create(".letter-tile", {
+            Draggable.create(".draggable-l", {
                 bounds: "body",
                 onRelease: function() {
-                    if(this.y < -120) {
-                        gsap.to(this.target, {scale: 0.8, opacity: 0.7});
-                        if(document.querySelectorAll('.letter-tile[style*="opacity: 0.7"]').length === 3) {
-                            setTimeout(() => nextPage(7), 800);
-                        }
-                    } else {
-                        gsap.to(this.target, {x:0, y:0, duration: 0.3});
+                    if(this.y < -100) {
+                        this.target.style.opacity = '0.5';
+                        if(document.querySelectorAll('.draggable-l[style*="opacity: 0.5"]').length === 3) nextPage(7);
                     }
                 }
             });
