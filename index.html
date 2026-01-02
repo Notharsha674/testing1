@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Kuk's Orange Birthday Quest!</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.4/gsap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.4/Draggable.min.js"></script>
@@ -13,55 +13,92 @@
             background: linear-gradient(135deg, #ff9a9e 0%, #fad0c4 100%);
             height: 100vh; overflow: hidden; display: flex;
             justify-content: center; align-items: center; position: relative;
+            /* Prevent bounce scrolling on mobile */
+            overscroll-behavior: none;
         }
 
         .container {
-            text-align: center; z-index: 10; padding: 2rem;
-            width: 95%; max-width: 500px; max-height: 85vh;
+            text-align: center; z-index: 10; padding: 1.5rem;
+            width: 90%; max-width: 500px; 
+            max-height: 90vh; /* Better fit for mobile */
             background-color: rgba(255, 255, 255, 0.25);
             border-radius: 30px; backdrop-filter: blur(15px);
             box-shadow: 0 8px 32px rgba(255, 105, 180, 0.4);
             border: 2px solid rgba(255, 255, 255, 0.3);
-            display: none; overflow-y: auto;
+            display: none; 
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch; /* Smooth scroll inside modal */
         }
 
         .active-page { display: flex; flex-direction: column; align-items: center; animation: bounce-in 0.8s forwards; }
 
-        h1 { font-size: 1.8rem; color: #FF1493; text-shadow: 0 0 10px white; margin-bottom: 10px; }
-        .subtitle { color: #8A2BE2; margin-bottom: 15px; font-weight: bold; font-size: 0.9rem; }
+        h1 { font-size: 1.6rem; color: #FF1493; text-shadow: 0 0 10px white; margin-bottom: 8px; line-height: 1.2; }
+        .subtitle { color: #8A2BE2; margin-bottom: 12px; font-weight: bold; font-size: 0.9rem; }
 
         .next-button {
-            padding: 0.8rem 2rem; font-size: 1.1rem;
+            padding: 0.8rem 2rem; font-size: 1rem;
             background: linear-gradient(45deg, #FF1493, #8A2BE2);
             color: white; border: none; border-radius: 50px;
             cursor: pointer; box-shadow: 0 4px 15px rgba(255, 20, 147, 0.5);
-            transition: 0.3s; margin-top: 10px; width: 80%;
+            transition: 0.3s; margin-top: 10px; width: 90%;
+            /* Prevent double-tap zoom */
+            touch-action: manipulation;
         }
 
-        .game-canvas { position: relative; width: 100%; height: 250px; background: rgba(255,255,255,0.2); border-radius: 20px; margin: 10px 0; overflow: hidden; }
-        .hunt-item { position: absolute; cursor: pointer; font-size: 2rem; user-select: none; }
+        .game-canvas { 
+            position: relative; width: 100%; height: 220px; 
+            background: rgba(255,255,255,0.2); border-radius: 20px; 
+            margin: 10px 0; overflow: hidden; 
+            touch-action: none; /* Critical for game touches */
+        }
+        
+        .hunt-item { position: absolute; cursor: pointer; font-size: 2rem; user-select: none; -webkit-tap-highlight-color: transparent; }
 
-        .progress-container { width: 80%; background: #eee; border-radius: 20px; height: 20px; margin: 15px 0; overflow: hidden; }
+        .progress-container { width: 90%; background: #eee; border-radius: 20px; height: 20px; margin: 15px 0; overflow: hidden; }
         .progress-bar { height: 100%; width: 0%; background: linear-gradient(90deg, #FF1493, #FFA500); transition: 0.1s; }
 
-        .poem-text { font-size: 0.95rem; color: #4b0082; line-height: 1.6; font-weight: 500; padding: 10px; text-align: center; }
+        .poem-text { font-size: 0.9rem; color: #4b0082; line-height: 1.5; font-weight: 500; padding: 5px; text-align: center; }
         .letter-img { width: 100%; border-radius: 15px; border: 4px solid white; margin-bottom: 5px; }
         
-        #mascot-container { position: fixed; bottom: 15px; left: 15px; z-index: 1000; display: none; }
-        #mascot { width: 70px; border-radius: 15px; border: 3px solid white; cursor: pointer; }
+        #mascot-container { position: fixed; bottom: 10px; left: 10px; z-index: 1000; display: none; }
+        #mascot { width: 60px; border-radius: 15px; border: 3px solid white; cursor: pointer; }
         #speech-bubble {
-            position: absolute; bottom: 85px; left: 0; width: 180px;
-            background: white; padding: 12px; border-radius: 15px;
-            font-size: 0.8rem; color: #333; box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            position: absolute; bottom: 75px; left: 0; width: 160px;
+            background: white; padding: 10px; border-radius: 15px;
+            font-size: 0.75rem; color: #333; box-shadow: 0 5px 15px rgba(0,0,0,0.1);
             display: none; font-weight: bold; border: 2px solid #FF1493;
         }
 
         .floating { position: absolute; pointer-events: none; z-index: 1; }
         @keyframes bounce-in { 0% { transform: scale(0.9); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
 
-        /* Custom style for Step 7 Feed game */
-        #dino-mouth { width: 100px; height: 100px; background: rgba(0,0,0,0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 4rem; margin-top: 20px; border: 3px dashed #FF1493; }
-        #draggable-orange { font-size: 3.5rem; cursor: grab; z-index: 100; touch-action: none; }
+        /* Step 3 Tree Style */
+        #tree-wrapper {
+            font-size: 6rem; /* Slightly smaller for mobile */
+            cursor: grab; position: relative; display: inline-block;
+            touch-action: none; /* Important for shaking on phone */
+            user-select: none;
+        }
+
+        /* Step 7 Feed game */
+        #dino-mouth { width: 90px; height: 90px; background: rgba(0,0,0,0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 3.5rem; margin-top: 10px; border: 3px dashed #FF1493; }
+        #draggable-orange { font-size: 3rem; cursor: grab; z-index: 100; touch-action: none; position: relative; }
+
+        /* Step 8 Gift */
+        #gift-container {
+            margin: 0 auto;
+            touch-action: none; /* Stops scrolling while scratching */
+        }
+        
+        /* Mobile Specific Adjustments */
+        @media (max-width: 400px) {
+            h1 { font-size: 1.4rem; }
+            .game-canvas { height: 200px; }
+            #tree-wrapper { font-size: 5rem; }
+            #mascot { width: 50px; }
+            #speech-bubble { width: 140px; bottom: 65px; font-size: 0.7rem; }
+            .container { padding: 1rem; width: 95%; }
+        }
     </style>
 </head>
 <body>
@@ -80,25 +117,25 @@
         <p class="subtitle">The ball is fast! Catch it 5 times!</p>
         <div id="vball-score" style="font-size: 1.5rem; color: #FF1493;">0 / 5</div>
         <div class="game-canvas" id="vball-area">
-            <img id="vball" src="https://img.icons8.com/color/150/volleyball.png" style="width:70px; cursor:pointer; position:absolute;" onclick="hitBall()">
+            <img id="vball" src="https://img.icons8.com/color/150/volleyball.png" style="width:60px; cursor:pointer; position:absolute;" onclick="hitBall()">
         </div>
     </div>
 
     <div id="page3" class="container">
         <h1>Step 2: The Wish</h1>
         <p class="subtitle">Swipe across the flames to blow them out!</p>
-        <div style="font-size: 3.5rem; display: flex; gap: 10px; margin: 20px 0;">
-            <span onmouseover="extinguish(this)" ontouchmove="extinguish(this)" class="can" style="cursor:crosshair transition: 0.3s;">🕯️</span>
-            <span onmouseover="extinguish(this)" ontouchmove="extinguish(this)" class="can" style="cursor:crosshair transition: 0.3s;">🕯️</span>
-            <span onmouseover="extinguish(this)" ontouchmove="extinguish(this)" class="can" style="cursor:crosshair transition: 0.3s;">🕯️</span>
+        <div style="font-size: 3rem; display: flex; gap: 10px; margin: 20px 0; justify-content: center; touch-action: none;">
+            <span onmouseover="extinguish(this)" ontouchmove="extinguish(this)" class="can" style="cursor:crosshair; transition: 0.3s; padding: 10px;">🕯️</span>
+            <span onmouseover="extinguish(this)" ontouchmove="extinguish(this)" class="can" style="cursor:crosshair; transition: 0.3s; padding: 10px;">🕯️</span>
+            <span onmouseover="extinguish(this)" ontouchmove="extinguish(this)" class="can" style="cursor:crosshair; transition: 0.3s; padding: 10px;">🕯️</span>
         </div>
-        <div style="font-size: 5rem;">🎂</div>
+        <div style="font-size: 4rem;">🎂</div>
     </div>
 
     <div id="page4" class="container">
         <h1>Step 3: The Orange Tree</h1>
         <p class="subtitle">Wiggle the tree back and forth to drop oranges!</p>
-        <div id="tree-wrapper" style="font-size: 7rem; cursor:grab; position:relative; display: inline-block;">
+        <div id="tree-wrapper">
             🌳
             <div id="blooms" style="position:absolute; top:0; width:100%; pointer-events: none;"></div>
         </div>
@@ -136,7 +173,7 @@
         <h1>Step 8: Unbox the Love!</h1>
         <p class="subtitle">Scratch away the wrapping paper!</p>
         <div id="gift-container" style="position: relative; width: 150px; height: 150px; cursor: crosshair;">
-             <div style="position: absolute; font-size: 6rem;">🎁</div>
+             <div style="position: absolute; font-size: 6rem; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;">🎁</div>
              <canvas id="scratch-canvas" width="150" height="150" style="position: absolute; top:0; left:0; border-radius: 10px;"></canvas>
         </div>
         <p id="scratch-hint" style="margin-top: 10px; color: #FF1493; font-size: 0.8rem;">Scratch 80% to open!</p>
@@ -144,7 +181,7 @@
 
     <div id="page10" class="container">
         <h1>For Your Eyes Only</h1>
-        <img src="letter.jpg" class="letter-img">
+        <img src="letter.jpg" class="letter-img" alt="Letter">
         <p style="color: #8A2BE2; font-weight: bold; margin-bottom: 15px;">恐竜 (Dino)</p>
         <div style="background: #ffe6ea; padding: 10px; border-radius: 10px; margin-bottom: 15px; font-size: 0.8rem; color: #d63384; border: 2px dashed #ff69b4; font-weight: bold;">
             ⚠️ u cant unlock full letter bcz:<br>
@@ -202,13 +239,21 @@
             bubble.innerText = msgs[n] || "Almost there!";
         }
 
-        function startSurprise() { song.play(); showPage(2); document.getElementById('mascot-container').style.display='block'; bubble.style.display='block'; createFloating(); }
+        function startSurprise() { 
+            // Attempt to play audio on interaction (browser policy)
+            song.play().catch(e => console.log("Audio needs user gesture")); 
+            showPage(2); 
+            document.getElementById('mascot-container').style.display='block'; 
+            bubble.style.display='block'; 
+            createFloating(); 
+        }
 
         // --- STEP 1: BOUNCING BALL ---
         function moveBall() {
             if(hits >= 5) return;
+            // Adjust bounds for mobile canvas
             gsap.to("#vball", {
-                x: Math.random() * 200,
+                x: Math.random() * (document.getElementById('vball-area').clientWidth - 60),
                 y: Math.random() * 150,
                 duration: 0.6,
                 onComplete: moveBall
@@ -234,23 +279,32 @@
         // --- STEP 3: SHAKE TREE ---
         function initTreeShake() {
             let lastX = 0;
-            let shakeThreshold = 15;
+            let shakeThreshold = 10; // Lower threshold for touch
             const tree = document.getElementById('tree-wrapper');
             
-            tree.addEventListener('mousemove', (e) => {
-                let delta = Math.abs(e.pageX - lastX);
+            const handleShake = (currentX) => {
+                let delta = Math.abs(currentX - lastX);
                 if(delta > shakeThreshold) {
                     gsap.to(tree, {rotation: 10, duration: 0.1, yoyo: true, repeat: 1});
-                    if(Math.random() > 0.9) dropOrange();
+                    if(Math.random() > 0.85) dropOrange(); // Slightly easier drop rate
                 }
-                lastX = e.pageX;
-            });
+                lastX = currentX;
+            };
+
+            tree.addEventListener('mousemove', (e) => handleShake(e.pageX));
+            
+            // Added Touch Support for Mobile
+            tree.addEventListener('touchmove', (e) => {
+                e.preventDefault(); // Stop screen from scrolling
+                handleShake(e.touches[0].pageX);
+            }, {passive: false});
         }
+        
         function dropOrange() {
             if(treeCount >= 6) return;
             treeCount++;
             const b = document.createElement('span'); b.innerText = "🍊"; 
-            b.style.position="absolute"; b.style.left=Math.random()*80+"px"; b.style.top="20px";
+            b.style.position="absolute"; b.style.left=Math.random()*60+"px"; b.style.top="20px"; b.style.fontSize = "2rem";
             document.getElementById('blooms').appendChild(b);
             gsap.to(b, {y: 200, rotation: 360, duration: 1, ease: "bounce.out"});
             document.getElementById('tree-count').innerText = "Dropped: "+treeCount+" / 6";
@@ -264,14 +318,25 @@
             heart.className="hunt-item"; heart.innerText="❤️";
             heart.style.left = "50%"; heart.style.top = "50%";
             
+            // Logic for touch interaction (tap) vs mouse over
             heart.onmouseover = () => {
-                gsap.to(heart, {
-                    left: Math.random() * 80 + "%",
-                    top: Math.random() * 80 + "%",
-                    duration: 0.2
-                });
+                // Only on desktop/hover capable devices
+                if(window.matchMedia("(pointer: fine)").matches) {
+                    moveHeart(heart);
+                }
             };
-            heart.onclick = () => showPage(6);
+            
+            // On mobile, sometimes tap moves it, sometimes catches it.
+            // Let's make it so you have to tap it successfully.
+            heart.onclick = () => {
+                // Small chance to catch on mobile tap
+                if(Math.random() > 0.3) {
+                     showPage(6);
+                } else {
+                     moveHeart(heart);
+                }
+            };
+
             canvas.appendChild(heart);
             
             for(let i=0; i<8; i++){
@@ -281,13 +346,21 @@
             }
         }
 
+        function moveHeart(el) {
+            gsap.to(el, {
+                left: Math.random() * 80 + "%",
+                top: Math.random() * 80 + "%",
+                duration: 0.2
+            });
+        }
+
         // --- STEP 5: BALLOONS ---
         function initBalloonPop() {
             const canvas = document.getElementById('balloon-canvas'); canvas.innerHTML='';
             for(let i=0; i<8; i++){
                 const b = document.createElement('div'); b.className="hunt-item"; b.innerText="🎈";
-                b.style.left=Math.random()*85+"%"; b.style.top="210px"; canvas.appendChild(b);
-                gsap.to(b, { y: -250, duration: Math.random()*3+2, repeat: -1, delay: i*0.5 });
+                b.style.left=Math.random()*80+"%"; b.style.top="220px"; canvas.appendChild(b);
+                gsap.to(b, { y: -280, duration: Math.random()*3+2, repeat: -1, delay: i*0.5 });
                 b.onclick = () => { b.innerText="💥"; popCount++; if(popCount===5) showPage(7); setTimeout(()=>b.remove(), 200); };
             }
         }
@@ -321,14 +394,20 @@
             ctx.globalCompositeOperation = 'destination-out';
 
             let isDrawing = false;
-            let totalPixels = 150 * 150;
             let clearedPixels = 0;
 
             function scratch(e) {
                 if(!isDrawing) return;
+                // Prevent scrolling on mobile
+                if(e.type === 'touchmove') e.preventDefault();
+                
                 const rect = canvas.getBoundingClientRect();
-                const x = (e.clientX || e.touches[0].clientX) - rect.left;
-                const y = (e.clientY || e.touches[0].clientY) - rect.top;
+                const clientX = e.clientX || e.touches[0].clientX;
+                const clientY = e.clientY || e.touches[0].clientY;
+                
+                const x = clientX - rect.left;
+                const y = clientY - rect.top;
+                
                 ctx.beginPath();
                 ctx.arc(x, y, 15, 0, Math.PI * 2);
                 ctx.fill();
@@ -336,16 +415,18 @@
             }
 
             canvas.addEventListener('mousedown', () => isDrawing = true);
-            canvas.addEventListener('touchstart', () => isDrawing = true);
+            canvas.addEventListener('touchstart', (e) => { isDrawing = true; e.preventDefault(); }, {passive: false});
+            
             window.addEventListener('mouseup', () => isDrawing = false);
             window.addEventListener('touchend', () => isDrawing = false);
+            
             canvas.addEventListener('mousemove', scratch);
-            canvas.addEventListener('touchmove', scratch);
+            canvas.addEventListener('touchmove', scratch, {passive: false});
 
             function checkScratch() {
                 clearedPixels++;
-                if(clearedPixels > 150) { // Simple threshold check
-                   showPage(10);
+                if(clearedPixels > 100) { // Adjusted threshold
+                    showPage(10);
                 }
             }
         }
@@ -356,11 +437,11 @@
             bubble.innerHTML = `Kuk, birthday tax! 🎤 <br> Sing for me? <br><br> I want to hear the song I heard the first time... u remember? <br> <button onclick="closeDino()" style="background:#FF1493; color:white; border:none; padding:5px; border-radius:5px; margin-top:5px; cursor:pointer;">Okay!</button>`;
         }
 
-        function closeDino() { baby.pause(); baby.currentTime=0; song.play(); bubble.style.width = '180px'; bubble.innerText = "Happy Birthday!"; }
+        function closeDino() { baby.pause(); baby.currentTime=0; song.play(); bubble.style.width = '160px'; bubble.innerText = "Happy Birthday!"; }
 
         function createFloating() {
             const syms = ['✨', '🍊', '❤️'];
-            for(let i=0; i<20; i++) {
+            for(let i=0; i<15; i++) {
                 const e = document.createElement('div'); e.className='floating'; 
                 e.innerText= syms[Math.floor(Math.random()*syms.length)];
                 e.style.left=Math.random()*100+"vw"; e.style.top="-50px"; document.body.appendChild(e);
