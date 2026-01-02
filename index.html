@@ -14,7 +14,7 @@
             background: linear-gradient(135deg, #ff9a9e 0%, #fad0c4 100%);
             height: 100vh; overflow: hidden; display: flex;
             justify-content: center; align-items: center; position: relative;
-            touch-action: none; /* Prevents accidental scrolling during games */
+            touch-action: none;
         }
 
         .container {
@@ -41,35 +41,35 @@
             cursor: pointer; width: 90%;
         }
 
-        /* --- GAME CANVAS STYLES --- */
         .game-box { 
             position: relative; width: 100%; height: 280px; 
-            background: rgba(255,255,255,0.3); border-radius: 25px; 
+            background: #111; border-radius: 25px; 
             overflow: hidden; display: flex; align-items: center; justify-content: center;
         }
 
-        /* Squeeze Game */
-        #glass { width: 80px; height: 120px; border: 4px solid white; border-top: none; border-radius: 0 0 20px 20px; position: relative; overflow: hidden; }
-        #juice { position: absolute; bottom: 0; width: 100%; height: 0%; background: orange; transition: 0.1s; }
-
-        /* Maze Game */
-        .maze-wall { position: absolute; background: var(--purple); border-radius: 10px; }
-        #maze-target { position: absolute; bottom: 10px; right: 10px; font-size: 2rem; }
-        #maze-player { width: 40px; height: 40px; position: absolute; top: 10px; left: 10px; z-index: 20; touch-action: none; }
-
-        /* Dark Search */
-        #dark-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: #222; z-index: 5; }
+        /* Fixed Flashlight Layers */
         #flashlight { 
-            position: absolute; width: 120px; height: 120px; 
-            background: radial-gradient(circle, rgba(255,255,255,1) 0%, rgba(255,255,255,0) 70%);
-            border-radius: 50%; pointer-events: none; z-index: 6; mix-blend-mode: screen; 
+            position: absolute; width: 150px; height: 150px; 
+            background: radial-gradient(circle, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0) 70%);
+            border-radius: 50%; pointer-events: none; z-index: 8; 
+        }
+        #hidden-dino { 
+            position: absolute; cursor: pointer; font-size: 3.5rem; 
+            z-index: 7; opacity: 0; transition: opacity 0.2s; 
         }
 
-        #mascot-container { position: fixed; bottom: 10px; left: 10px; z-index: 1000; display: none; }
-        #mascot { width: 60px; border-radius: 12px; border: 2px solid white; }
-        #speech { position: absolute; bottom: 70px; left: 0; background: white; padding: 10px; border-radius: 15px; font-size: 0.7rem; width: 140px; display: none; border: 2px solid var(--pink); }
+        #glass { width: 80px; height: 120px; border: 4px solid white; border-top: none; border-radius: 0 0 20px 20px; position: relative; overflow: hidden; background: rgba(255,255,255,0.2); }
+        #juice { position: absolute; bottom: 0; width: 100%; height: 0%; background: orange; transition: 0.1s; }
 
-        .letter-tile { width: 60px; height: 60px; background: white; border-radius: 15px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; font-weight: bold; color: var(--pink); box-shadow: 0 4px 10px rgba(0,0,0,0.1); touch-action: none; }
+        .maze-wall { position: absolute; background: var(--purple); border-radius: 10px; }
+        #maze-target { position: absolute; bottom: 10px; right: 10px; font-size: 2rem; }
+        #maze-player { width: 45px; height: 45px; position: absolute; top: 10px; left: 10px; z-index: 20; touch-action: none; cursor: grab; }
+
+        #mascot-container { position: fixed; bottom: 10px; left: 10px; z-index: 1000; display: none; }
+        #mascot { width: 65px; border-radius: 15px; border: 3px solid white; box-shadow: 0 5px 10px rgba(0,0,0,0.2); }
+        #speech { position: absolute; bottom: 80px; left: 0; background: white; padding: 12px; border-radius: 18px; font-size: 0.8rem; width: 150px; display: none; border: 2px solid var(--pink); font-weight: bold; box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
+
+        .letter-tile { width: 65px; height: 65px; background: white; border-radius: 18px; display: flex; align-items: center; justify-content: center; font-size: 1.8rem; font-weight: bold; color: var(--pink); box-shadow: 0 4px 10px rgba(0,0,0,0.1); touch-action: none; cursor: grab; }
     </style>
 </head>
 <body>
@@ -88,29 +88,28 @@
     <div id="p2" class="container">
         <h1>Step 1: Fresh Juice</h1>
         <p class="subtitle">HOLD the orange to fill the glass!</p>
-        <div class="game-box">
+        <div class="game-box" style="background: rgba(255,255,255,0.3);">
             <div id="glass"><div id="juice"></div></div>
-            <div id="orange-btn" style="font-size: 4rem; margin-left: 20px; cursor: pointer; user-select: none;" onmousedown="startSqueeze()" ontouchstart="startSqueeze()" onmouseup="stopSqueeze()" ontouchend="stopSqueeze()">🍊</div>
+            <div id="orange-btn" style="font-size: 4.5rem; margin-left: 20px; cursor: pointer;" onmousedown="startSqueeze()" ontouchstart="startSqueeze()" onmouseup="stopSqueeze()" ontouchend="stopSqueeze()">🍊</div>
         </div>
-        <p id="juice-status">0% Full</p>
+        <p id="juice-status" style="font-weight:bold; color:var(--orange);">0% Full</p>
     </div>
 
     <div id="p3" class="container">
         <h1>Step 2: Hide & Seek</h1>
-        <p class="subtitle">Find the hidden Dino in the dark!</p>
+        <p class="subtitle">Move your finger to find the Dino!</p>
         <div class="game-box" id="search-area" onmousemove="moveLight(event)" ontouchmove="moveLight(event)">
-            <div id="dark-overlay"></div>
-            <div id="flashlight"></div>
-            <div id="hidden-dino" style="position:absolute; cursor:pointer; font-size: 3rem; z-index: 4;" onclick="nextPage(4)">🦖</div>
+            <div id="flashlight" style="left: -200px; top: -200px;"></div>
+            <div id="hidden-dino" onclick="nextPage(4)">🦖</div>
         </div>
     </div>
 
     <div id="p4" class="container">
         <h1>Step 3: The Maze</h1>
-        <p class="subtitle">Drag the heart to the Dino!</p>
-        <div class="game-box" id="maze-container">
-            <div class="maze-wall" style="width: 80%; height: 10px; top: 60px; left: 0;"></div>
-            <div class="maze-wall" style="width: 80%; height: 10px; bottom: 80px; right: 0;"></div>
+        <p class="subtitle">Drag the heart through the path!</p>
+        <div class="game-box" id="maze-container" style="background: rgba(255,255,255,0.3);">
+            <div class="maze-wall" style="width: 80%; height: 15px; top: 80px; left: 0;"></div>
+            <div class="maze-wall" style="width: 80%; height: 15px; bottom: 100px; right: 0;"></div>
             <div id="maze-target">🦖</div>
             <div id="maze-player">❤️</div>
         </div>
@@ -118,19 +117,18 @@
 
     <div id="p5" class="container">
         <h1>Step 4: Orange Pops</h1>
-        <p class="subtitle">Pop all the bubbles to clear the way!</p>
-        <div class="game-box" id="bubble-box" style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; padding: 20px;">
-            </div>
+        <p class="subtitle">Pop them all to move on!</p>
+        <div class="game-box" id="bubble-box" style="background: transparent; display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; padding: 15px;"></div>
     </div>
 
     <div id="p6" class="container">
         <h1>Step 5: Unlock the Name</h1>
-        <p class="subtitle">Drag letters into order!</p>
-        <div class="game-box" style="flex-direction: column; gap: 20px;">
+        <p class="subtitle">Drag the letters to spell KUK!</p>
+        <div class="game-box" style="background: transparent; flex-direction: column; gap: 30px;">
             <div style="display: flex; gap: 10px;" id="drop-zone">
-                <div class="letter-tile" style="border: 2px dashed #aaa; background: transparent;"></div>
-                <div class="letter-tile" style="border: 2px dashed #aaa; background: transparent;"></div>
-                <div class="letter-tile" style="border: 2px dashed #aaa; background: transparent;"></div>
+                <div class="letter-tile" style="border: 3px dashed #ffb6c1; background: rgba(255,255,255,0.5);"></div>
+                <div class="letter-tile" style="border: 3px dashed #ffb6c1; background: rgba(255,255,255,0.5);"></div>
+                <div class="letter-tile" style="border: 3px dashed #ffb6c1; background: rgba(255,255,255,0.5);"></div>
             </div>
             <div style="display: flex; gap: 15px;" id="letter-dock">
                 <div class="letter-tile" id="l1">U</div>
@@ -141,13 +139,12 @@
     </div>
 
     <div id="p7" class="container">
-        <h1>Happy Birthday! 🌸</h1>
-        <div style="overflow-y: auto; font-size: 0.9rem; color: #444; padding: 10px;">
-            You made it! You are the superstar of the day. 🌟 <br><br>
-            Kuk, you are genuinely one of the most amazing people I know. I hope your day is as bright as an orange and as sweet as a birthday cake. <br><br>
-            Keep being your wonderful self!
+        <h1>Happy Birthday Kuk! 🌸</h1>
+        <div style="overflow-y: auto; font-size: 1rem; color: #444; padding: 10px; line-height: 1.5;">
+            You completed the Orange Quest! 🍊<br><br>
+            Kuk, you are a superstar. I hope this year brings you as much happiness as you give to others. You are perfect just the way you are! ✨
         </div>
-        <button class="btn" onclick="location.reload()">Replay? 🦖</button>
+        <button class="btn" onclick="location.reload()">PLAY AGAIN? 🦖</button>
     </div>
 
     <div id="mascot-container">
@@ -164,32 +161,40 @@
             if(n === 2) { 
                 document.getElementById('bg-music').play();
                 document.getElementById('mascot-container').style.display = 'block';
-                showMascot("Let's go, Kuk!");
+                showMascot("Let's go, Kuk! Squeeze the orange!");
             }
             document.querySelectorAll('.container').forEach(c => c.classList.remove('active-page'));
             document.getElementById('p'+n).classList.add('active-page');
             
-            if(n === 3) initSearch();
-            if(n === 4) initMaze();
+            if(n === 3) {
+                initSearch();
+                showMascot("Where am I? Use the light!");
+            }
+            if(n === 4) {
+                initMaze();
+                showMascot("Careful! Stay in the lines!");
+            }
             if(n === 5) initBubbles();
-            if(n === 6) initScramble();
+            if(n === 6) {
+                initScramble();
+                showMascot("Spell your name!");
+            }
         }
 
         function showMascot(text) {
             const s = document.getElementById('speech');
             s.innerText = text;
             s.style.display = 'block';
-            setTimeout(() => s.style.display = 'none', 3000);
+            setTimeout(() => s.style.display = 'none', 4000);
         }
 
-        // GAME 1: Squeeze Logic
         function startSqueeze() {
             squeezeInterval = setInterval(() => {
                 if(juiceLevel < 100) {
                     juiceLevel += 2;
                     document.getElementById('juice').style.height = juiceLevel + '%';
                     document.getElementById('juice-status').innerText = juiceLevel + '% Full';
-                    gsap.to("#orange-btn", {scale: 0.9, duration: 0.1});
+                    gsap.to("#orange-btn", {scale: 0.85, duration: 0.1});
                 } else {
                     stopSqueeze();
                     nextPage(3);
@@ -201,20 +206,33 @@
             gsap.to("#orange-btn", {scale: 1, duration: 0.1});
         }
 
-        // GAME 2: Flashlight Logic
         function initSearch() {
             const dino = document.getElementById('hidden-dino');
-            dino.style.left = Math.random() * 70 + '%';
-            dino.style.top = Math.random() * 70 + '%';
+            dino.style.left = (20 + Math.random() * 60) + '%';
+            dino.style.top = (20 + Math.random() * 60) + '%';
         }
+
         function moveLight(e) {
+            e.preventDefault();
             const rect = document.getElementById('search-area').getBoundingClientRect();
             const x = (e.clientX || e.touches[0].clientX) - rect.left;
             const y = (e.clientY || e.touches[0].clientY) - rect.top;
-            gsap.to("#flashlight", {left: x - 60, top: y - 60, duration: 0.1});
+            
+            gsap.to("#flashlight", {left: x - 75, top: y - 75, duration: 0.1});
+
+            // Check if Dino is inside the light
+            const dino = document.getElementById('hidden-dino');
+            const dx = x - (dino.offsetLeft + 25);
+            const dy = y - (dino.offsetTop + 25);
+            const distance = Math.sqrt(dx*dx + dy*dy);
+
+            if(distance < 70) {
+                dino.style.opacity = "1";
+            } else {
+                dino.style.opacity = "0";
+            }
         }
 
-        // GAME 3: Maze Logic
         function initMaze() {
             Draggable.create("#maze-player", {
                 type: "x,y",
@@ -228,17 +246,17 @@
             });
         }
 
-        // GAME 4: Bubble Pop
         function initBubbles() {
             const box = document.getElementById('bubble-box');
             box.innerHTML = '';
             for(let i=0; i<12; i++) {
                 const b = document.createElement('div');
-                b.style.width = '50px'; b.style.height = '50px';
-                b.style.background = 'orange'; b.style.borderRadius = '50%';
-                b.style.cursor = 'pointer';
+                b.style.width = '60px'; b.style.height = '60px';
+                b.style.background = 'radial-gradient(circle at 30% 30%, #FFA500, #FF8C00)';
+                b.style.borderRadius = '50%';
+                b.style.boxShadow = 'inset -5px -5px 10px rgba(0,0,0,0.2), 5px 5px 10px rgba(0,0,0,0.1)';
                 b.onclick = function() {
-                    gsap.to(this, {scale: 0, opacity: 0, duration: 0.2});
+                    gsap.to(this, {scale: 1.5, opacity: 0, duration: 0.2});
                     bubblesPopped++;
                     if(bubblesPopped === 12) nextPage(6);
                 };
@@ -246,18 +264,17 @@
             }
         }
 
-        // GAME 5: Scramble Logic
         function initScramble() {
             Draggable.create(".letter-tile", {
                 bounds: "body",
                 onRelease: function() {
-                    // Simplified: check if they are moved from bottom to top
-                    if(this.y < -100) {
-                        gsap.to(this.target, {opacity: 0.5});
-                        // check logic for Kuk spelling
-                        if(document.querySelectorAll('.letter-tile[style*="opacity: 0.5"]').length === 3) {
-                            setTimeout(() => nextPage(7), 500);
+                    if(this.y < -120) {
+                        gsap.to(this.target, {scale: 0.8, opacity: 0.7});
+                        if(document.querySelectorAll('.letter-tile[style*="opacity: 0.7"]').length === 3) {
+                            setTimeout(() => nextPage(7), 800);
                         }
+                    } else {
+                        gsap.to(this.target, {x:0, y:0, duration: 0.3});
                     }
                 }
             });
