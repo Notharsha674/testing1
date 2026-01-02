@@ -2,106 +2,371 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Kuk's Quest</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/Draggable.min.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kuk's Orange Birthday Quest!</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.4/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.4/Draggable.min.js"></script>
     <style>
-        :root { --p: #FFB7C5; --d: #FF4D6D; --t: #70D6FF; }
-        * { margin:0; padding:0; box-sizing:border-box; font-family: sans-serif; -webkit-tap-highlight-color:transparent; }
-        body { background: #fdf2f4; height:100vh; overflow:hidden; display:flex; justify-content:center; align-items:center; touch-action:none; }
-        .page { text-align:center; width:90%; height:80vh; background:white; border-radius:30px; padding:20px; display:none; flex-direction:column; justify-content:space-between; box-shadow: 0 10px 30px rgba(0,0,0,0.05); }
-        .active { display:flex; }
-        .box { position:relative; width:100%; height:300px; background:#f9f9f9; border-radius:20px; overflow:hidden; }
-        .btn { padding:15px; background:var(--d); color:white; border:none; border-radius:25px; font-weight:bold; width:100%; }
-        .tile { width:60px; height:60px; background:white; border:2px solid var(--p); border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:bold; color:var(--d); touch-action:none; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Comic Sans MS', cursive, sans-serif; }
+        
+        body {
+            background: linear-gradient(135deg, #ff9a9e 0%, #fad0c4 100%);
+            height: 100vh; overflow: hidden; display: flex;
+            justify-content: center; align-items: center; position: relative;
+        }
+
+        .container {
+            text-align: center; z-index: 10; padding: 2rem;
+            width: 95%; max-width: 500px; max-height: 85vh;
+            background-color: rgba(255, 255, 255, 0.25);
+            border-radius: 30px; backdrop-filter: blur(15px);
+            box-shadow: 0 8px 32px rgba(255, 105, 180, 0.4);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            display: none; overflow-y: auto;
+        }
+
+        .active-page { display: flex; flex-direction: column; align-items: center; animation: bounce-in 0.8s forwards; }
+
+        h1 { font-size: 1.8rem; color: #FF1493; text-shadow: 0 0 10px white; margin-bottom: 10px; }
+        .subtitle { color: #8A2BE2; margin-bottom: 15px; font-weight: bold; font-size: 0.9rem; }
+
+        .next-button {
+            padding: 0.8rem 2rem; font-size: 1.1rem;
+            background: linear-gradient(45deg, #FF1493, #8A2BE2);
+            color: white; border: none; border-radius: 50px;
+            cursor: pointer; box-shadow: 0 4px 15px rgba(255, 20, 147, 0.5);
+            transition: 0.3s; margin-top: 10px; width: 80%;
+        }
+
+        .game-canvas { position: relative; width: 100%; height: 250px; background: rgba(255,255,255,0.2); border-radius: 20px; margin: 10px 0; overflow: hidden; }
+        .hunt-item { position: absolute; cursor: pointer; font-size: 2rem; user-select: none; }
+
+        .progress-container { width: 80%; background: #eee; border-radius: 20px; height: 20px; margin: 15px 0; overflow: hidden; }
+        .progress-bar { height: 100%; width: 0%; background: linear-gradient(90deg, #FF1493, #FFA500); transition: 0.1s; }
+
+        .poem-text { font-size: 0.95rem; color: #4b0082; line-height: 1.6; font-weight: 500; padding: 10px; text-align: center; }
+        .letter-img { width: 100%; border-radius: 15px; border: 4px solid white; margin-bottom: 5px; }
+        
+        #mascot-container { position: fixed; bottom: 15px; left: 15px; z-index: 1000; display: none; }
+        #mascot { width: 70px; border-radius: 15px; border: 3px solid white; cursor: pointer; }
+        #speech-bubble {
+            position: absolute; bottom: 85px; left: 0; width: 180px;
+            background: white; padding: 12px; border-radius: 15px;
+            font-size: 0.8rem; color: #333; box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            display: none; font-weight: bold; border: 2px solid #FF1493;
+        }
+
+        .floating { position: absolute; pointer-events: none; z-index: 1; }
+        @keyframes bounce-in { 0% { transform: scale(0.9); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
+
+        /* Custom style for Step 7 Feed game */
+        #dino-mouth { width: 100px; height: 100px; background: rgba(0,0,0,0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 4rem; margin-top: 20px; border: 3px dashed #FF1493; }
+        #draggable-orange { font-size: 3.5rem; cursor: grab; z-index: 100; touch-action: none; }
     </style>
 </head>
 <body>
 
-    <div id="p1" class="page active">
-        <h1>Happy Birthday Kuk! 🪷</h1>
-        <div style="font-size:5rem;">🪷</div>
-        <button class="btn" onclick="go(2)">START QUEST</button>
+    <audio id="birthday-song" loop src="Yellow.mp3"></audio>
+    <audio id="baby-song" src="baby_you.mp3"></audio>
+
+    <div id="page1" class="container active-page">
+        <h1>Happy Birthday, Kuk! 🎂</h1>
+        <p class="subtitle">A special 10-step quest for my favorite person.</p>
+        <button class="next-button" onclick="startSurprise()">Start Quest 🦖</button>
     </div>
 
-    <div id="p2" class="page">
-        <h2>1. Bloom</h2>
-        <div class="box" style="display:flex; align-items:center; justify-content:center;">
-            <div id="flower" style="font-size:3rem; transition:0.1s;">🌱</div>
-            <div style="font-size:4rem; margin-left:20px;" ontouchstart="sB()" ontouchend="eB()">💧</div>
-        </div>
-        <p id="b-stat">0%</p>
-    </div>
-
-    <div id="p3" class="page">
-        <h2>2. Catch</h2>
-        <p id="c-score">Score: 0/10</p>
-        <div class="box" id="c-area"><div id="bt" style="position:absolute; bottom:10px; left:50%; font-size:3rem;">🪷</div></div>
-    </div>
-
-    <div id="p4" class="page">
-        <h2>3. Maze</h2>
-        <div class="box" id="m-box">
-            <div style="position:absolute; width:80%; height:10px; background:#eee; top:100px;"></div>
-            <div id="m-target" style="position:absolute; bottom:10px; right:10px; font-size:2rem;">🦖</div>
-            <div id="m-player" style="position:absolute; font-size:2rem;">❤️</div>
+    <div id="page2" class="container">
+        <h1>Step 1: Volleyball</h1>
+        <p class="subtitle">The ball is fast! Catch it 5 times!</p>
+        <div id="vball-score" style="font-size: 1.5rem; color: #FF1493;">0 / 5</div>
+        <div class="game-canvas" id="vball-area">
+            <img id="vball" src="https://img.icons8.com/color/150/volleyball.png" style="width:70px; cursor:pointer; position:absolute;" onclick="hitBall()">
         </div>
     </div>
 
-    <div id="p5" class="page">
-        <h2>4. Pop</h2>
-        <div id="d-box" class="box" style="display:grid; grid-template-columns:repeat(4,1fr); gap:10px; padding:20px;"></div>
-    </div>
-
-    <div id="p6" class="page">
-        <h2>5. Spell</h2>
-        <div class="box" style="display:flex; flex-direction:column; justify-content:center; gap:20px; align-items:center;">
-            <div style="display:flex; gap:10px;"><div class="tile" style="border-style:dashed;"></div><div class="tile" style="border-style:dashed;"></div><div class="tile" style="border-style:dashed;"></div></div>
-            <div style="display:flex; gap:10px;"><div class="tile drag">K</div><div class="tile drag">U</div><div class="tile drag">K</div></div>
+    <div id="page3" class="container">
+        <h1>Step 2: The Wish</h1>
+        <p class="subtitle">Swipe across the flames to blow them out!</p>
+        <div style="font-size: 3.5rem; display: flex; gap: 10px; margin: 20px 0;">
+            <span onmouseover="extinguish(this)" ontouchmove="extinguish(this)" class="can" style="cursor:crosshair transition: 0.3s;">🕯️</span>
+            <span onmouseover="extinguish(this)" ontouchmove="extinguish(this)" class="can" style="cursor:crosshair transition: 0.3s;">🕯️</span>
+            <span onmouseover="extinguish(this)" ontouchmove="extinguish(this)" class="can" style="cursor:crosshair transition: 0.3s;">🕯️</span>
         </div>
+        <div style="font-size: 5rem;">🎂</div>
     </div>
 
-    <div id="p7" class="page">
-        <h1>HBD Kuk! 💖</h1>
-        <p>You finished it! Hope your day is amazing! 🌸</p>
-        <button class="btn" onclick="location.reload()">REPLAY</button>
+    <div id="page4" class="container">
+        <h1>Step 3: The Orange Tree</h1>
+        <p class="subtitle">Wiggle the tree back and forth to drop oranges!</p>
+        <div id="tree-wrapper" style="font-size: 7rem; cursor:grab; position:relative; display: inline-block;">
+            🌳
+            <div id="blooms" style="position:absolute; top:0; width:100%; pointer-events: none;"></div>
+        </div>
+        <p id="tree-count" style="color:#FF1493; margin-top:10px;">Dropped: 0 / 6</p>
+    </div>
+
+    <div id="page5" class="container">
+        <h1>Step 4: The True Heart</h1>
+        <p class="subtitle">Catch the sparkly red heart! (It's shy!)</p>
+        <div class="game-canvas" id="heart-canvas"></div>
+    </div>
+
+    <div id="page6" class="container">
+        <h1>Step 5: Balloon Pop</h1>
+        <p class="subtitle">Pop 5 balloons!</p>
+        <div class="game-canvas" id="balloon-canvas"></div>
+        <div id="pop-score" style="color:#FF1493; font-weight:bold;">Popped: 0 / 5</div>
+    </div>
+
+    <div id="page7" class="container">
+        <h1>Step 6: Feed the Dino</h1>
+        <p class="subtitle">Drag the orange to the Dino's mouth!</p>
+        <div id="draggable-orange">🍊</div>
+        <div id="dino-mouth">🦖</div>
+    </div>
+
+    <div id="page8" class="container">
+        <h1>Step 7: Birthday Energy</h1>
+        <p class="subtitle">Mash the button to charge up!</p>
+        <div class="progress-container"><div id="energy-bar" class="progress-bar"></div></div>
+        <button class="next-button" onclick="fillEnergy()">CHARGING... ⚡</button>
+    </div>
+
+    <div id="page9" class="container">
+        <h1>Step 8: Unbox the Love!</h1>
+        <p class="subtitle">Scratch away the wrapping paper!</p>
+        <div id="gift-container" style="position: relative; width: 150px; height: 150px; cursor: crosshair;">
+             <div style="position: absolute; font-size: 6rem;">🎁</div>
+             <canvas id="scratch-canvas" width="150" height="150" style="position: absolute; top:0; left:0; border-radius: 10px;"></canvas>
+        </div>
+        <p id="scratch-hint" style="margin-top: 10px; color: #FF1493; font-size: 0.8rem;">Scratch 80% to open!</p>
+    </div>
+
+    <div id="page10" class="container">
+        <h1>For Your Eyes Only</h1>
+        <img src="letter.jpg" class="letter-img">
+        <p style="color: #8A2BE2; font-weight: bold; margin-bottom: 15px;">恐竜 (Dino)</p>
+        <div style="background: #ffe6ea; padding: 10px; border-radius: 10px; margin-bottom: 15px; font-size: 0.8rem; color: #d63384; border: 2px dashed #ff69b4; font-weight: bold;">
+            ⚠️ u cant unlock full letter bcz:<br>
+            1. its cringe | 2. fuck u who are reading this exept kuk
+        </div>
+        <button class="next-button" onclick="showPage(11)">Read Final Message 🌸</button>
+    </div>
+
+    <div id="page11" class="container">
+        <h1>Happy Birthday Kuk! 🌸</h1>
+        <div class="poem-text">
+            Finally, your birthday is here! <br>
+            I hope you had fun playing all these small games.<br><br>
+            Honestly, I am so happy to have you in my life.<br>
+            You are a very special person and you deserve the best.<br>
+            I always notice the small things you like,<br>
+            and I'm always here to support you in whatever you do.<br><br>
+            Keep shining like the superstar you are.<br>
+            I hope this year brings you so much success and happiness.<br>
+            Don't ever change, because you are perfect just the way you are.<br><br>
+            Happy Birthday once again, to the best person!
+        </div>
+        <button class="next-button" style="background: #8A2BE2; margin-top: 15px; width: 100%;" onclick="dinoRequest()">Ash has a request... 🦖</button>
+    </div>
+
+    <div id="mascot-container">
+        <div id="speech-bubble">Happy Birthday!</div>
+        <img id="mascot" src="dino.jpg" onclick="closeDino()">
     </div>
 
     <script>
-        let bV=0, bI, cS=0, cI;
-        function go(n){
-            document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
-            document.getElementById('p'+n).classList.add('active');
-            if(n===3) startC(); if(n===4) initM(); if(n===5) initP(); if(n===6) initS();
+        let hits=0, candleCount=0, treeCount=0, popCount=0, energy=0, giftCount=0;
+        const bubble = document.getElementById('speech-bubble');
+        const song = document.getElementById('birthday-song');
+        const baby = document.getElementById('baby-song');
+
+        function showPage(n) {
+            document.querySelectorAll('.container').forEach(c => c.classList.remove('active-page'));
+            const p = document.getElementById('page'+n);
+            if(p) p.classList.add('active-page');
+            
+            // Game Initializers
+            if(n===2) moveBall();
+            if(n===4) initTreeShake();
+            if(n===5) initHeartHunt();
+            if(n===6) initBalloonPop();
+            if(n===7) initDinoFeed();
+            if(n===9) initScratchCard();
+            
+            updateBubble(n);
         }
 
-        // Bloom
-        function sB(){ bI=setInterval(()=>{ if(bV<100){ bV+=2; document.getElementById('b-stat').innerText=bV+'%'; document.getElementById('flower').style.transform=`scale(${1+bV/50})`; if(bV>80)document.getElementById('flower').innerText='🪷'; } else { clearInterval(bI); go(3); } },50); }
-        function eB(){ clearInterval(bI); }
-
-        // Catch
-        function startC(){
-            Draggable.create("#bt",{type:"x",bounds:"#c-area"});
-            cI=setInterval(()=>{
-                if(cS>=10){ clearInterval(cI); go(4); return; }
-                let p=document.createElement('div'); p.innerText='🌸'; p.style.cssText=`position:absolute; left:${Math.random()*80}%; top:-30px; font-size:1.5rem;`;
-                document.getElementById('c-area').appendChild(p);
-                gsap.to(p,{y:330,duration:2,onUpdate:function(){
-                    let bR=document.getElementById('bt').getBoundingClientRect(), pR=p.getBoundingClientRect();
-                    if(!(pR.right<bR.left||pR.left>bR.right||pR.bottom<bR.top||pR.top>bR.bottom)){ cS++; document.getElementById('c-score').innerText=`Score: ${cS}/10`; p.remove(); this.kill(); }
-                },onComplete:()=>p.remove()});
-            },800);
+        function updateBubble(n) {
+            const msgs = ["", "", "Catch it!", "Swipe flames!", "Shake it!", "Don't let it run!", "Pop!", "Drag to Mouth!", "Charge it!", "Scratch it!", "Secret!", "Happy Bday!"];
+            bubble.innerText = msgs[n] || "Almost there!";
         }
 
-        // Maze
-        function initM(){ Draggable.create("#m-player",{type:"x,y",bounds:"#m-box",onDrag:function(){ if(this.hitTest("#m-target","50%")){ this.disable(); go(5); }}}); }
+        function startSurprise() { song.play(); showPage(2); document.getElementById('mascot-container').style.display='block'; bubble.style.display='block'; createFloating(); }
 
-        // Pop
-        function initP(){ let box=document.getElementById('d-box'), pD=0; for(let i=0;i<12;i++){ let d=document.createElement('div'); d.style.cssText="background:var(--t); border-radius:50%; opacity:0.6;"; d.onclick=function(){ this.style.visibility='hidden'; pD++; if(pD===12)go(6); }; box.appendChild(d); }}
+        // --- STEP 1: BOUNCING BALL ---
+        function moveBall() {
+            if(hits >= 5) return;
+            gsap.to("#vball", {
+                x: Math.random() * 200,
+                y: Math.random() * 150,
+                duration: 0.6,
+                onComplete: moveBall
+            });
+        }
+        function hitBall() {
+            hits++;
+            document.getElementById('vball-score').innerText = hits + " / 5";
+            gsap.fromTo("#vball", {scale: 1.5}, {scale: 1, duration: 0.2});
+            if(hits === 5) showPage(3);
+        }
 
-        // Scramble
-        function initS(){ Draggable.create(".drag",{bounds:"body",onRelease:function(){ if(this.y<-100){ this.target.style.opacity='0.5'; if(document.querySelectorAll('.drag[style*="opacity: 0.5"]').length===3)go(7); } else { gsap.to(this.target,{x:0,y:0}); }}}); }
+        // --- STEP 2: SWIPE CANDLES ---
+        function extinguish(el) {
+            if(el.innerText === "🕯️") {
+                el.style.opacity = "0.2";
+                el.innerText = "💨";
+                candleCount++;
+                if(candleCount === 3) setTimeout(() => showPage(4), 500);
+            }
+        }
+
+        // --- STEP 3: SHAKE TREE ---
+        function initTreeShake() {
+            let lastX = 0;
+            let shakeThreshold = 15;
+            const tree = document.getElementById('tree-wrapper');
+            
+            tree.addEventListener('mousemove', (e) => {
+                let delta = Math.abs(e.pageX - lastX);
+                if(delta > shakeThreshold) {
+                    gsap.to(tree, {rotation: 10, duration: 0.1, yoyo: true, repeat: 1});
+                    if(Math.random() > 0.9) dropOrange();
+                }
+                lastX = e.pageX;
+            });
+        }
+        function dropOrange() {
+            if(treeCount >= 6) return;
+            treeCount++;
+            const b = document.createElement('span'); b.innerText = "🍊"; 
+            b.style.position="absolute"; b.style.left=Math.random()*80+"px"; b.style.top="20px";
+            document.getElementById('blooms').appendChild(b);
+            gsap.to(b, {y: 200, rotation: 360, duration: 1, ease: "bounce.out"});
+            document.getElementById('tree-count').innerText = "Dropped: "+treeCount+" / 6";
+            if(treeCount===6) setTimeout(() => showPage(5), 1200);
+        }
+
+        // --- STEP 4: SHY HEART ---
+        function initHeartHunt() {
+            const canvas = document.getElementById('heart-canvas'); canvas.innerHTML='';
+            const heart = document.createElement('div');
+            heart.className="hunt-item"; heart.innerText="❤️";
+            heart.style.left = "50%"; heart.style.top = "50%";
+            
+            heart.onmouseover = () => {
+                gsap.to(heart, {
+                    left: Math.random() * 80 + "%",
+                    top: Math.random() * 80 + "%",
+                    duration: 0.2
+                });
+            };
+            heart.onclick = () => showPage(6);
+            canvas.appendChild(heart);
+            
+            for(let i=0; i<8; i++){
+                const h = document.createElement('div'); h.className="hunt-item"; h.innerText="🖤";
+                h.style.left=Math.random()*85+"%"; h.style.top=Math.random()*80+"%";
+                canvas.appendChild(h);
+            }
+        }
+
+        // --- STEP 5: BALLOONS ---
+        function initBalloonPop() {
+            const canvas = document.getElementById('balloon-canvas'); canvas.innerHTML='';
+            for(let i=0; i<8; i++){
+                const b = document.createElement('div'); b.className="hunt-item"; b.innerText="🎈";
+                b.style.left=Math.random()*85+"%"; b.style.top="210px"; canvas.appendChild(b);
+                gsap.to(b, { y: -250, duration: Math.random()*3+2, repeat: -1, delay: i*0.5 });
+                b.onclick = () => { b.innerText="💥"; popCount++; if(popCount===5) showPage(7); setTimeout(()=>b.remove(), 200); };
+            }
+        }
+
+        // --- STEP 6: DRAG FEEDING ---
+        function initDinoFeed() {
+            Draggable.create("#draggable-orange", {
+                type: "x,y",
+                edgeResistance: 0.65,
+                bounds: "#page7",
+                onDrag: function() {
+                    if (this.hitTest("#dino-mouth", "50%")) {
+                        gsap.to("#mascot", {scale: 1.5, duration: 0.2, yoyo: true, repeat: 1});
+                        bubble.innerText = "YUMMY!";
+                        this.disable();
+                        gsap.to("#draggable-orange", {opacity: 0, scale: 0, duration: 0.3});
+                        setTimeout(() => showPage(8), 1000);
+                    }
+                }
+            });
+        }
+
+        function fillEnergy() { energy+=10; document.getElementById('energy-bar').style.width=energy+"%"; if(energy>=100) showPage(9); }
+
+        // --- STEP 8: SCRATCH CARD ---
+        function initScratchCard() {
+            const canvas = document.getElementById('scratch-canvas');
+            const ctx = canvas.getContext('2d');
+            ctx.fillStyle = '#C0C0C0';
+            ctx.fillRect(0, 0, 150, 150);
+            ctx.globalCompositeOperation = 'destination-out';
+
+            let isDrawing = false;
+            let totalPixels = 150 * 150;
+            let clearedPixels = 0;
+
+            function scratch(e) {
+                if(!isDrawing) return;
+                const rect = canvas.getBoundingClientRect();
+                const x = (e.clientX || e.touches[0].clientX) - rect.left;
+                const y = (e.clientY || e.touches[0].clientY) - rect.top;
+                ctx.beginPath();
+                ctx.arc(x, y, 15, 0, Math.PI * 2);
+                ctx.fill();
+                checkScratch();
+            }
+
+            canvas.addEventListener('mousedown', () => isDrawing = true);
+            canvas.addEventListener('touchstart', () => isDrawing = true);
+            window.addEventListener('mouseup', () => isDrawing = false);
+            window.addEventListener('touchend', () => isDrawing = false);
+            canvas.addEventListener('mousemove', scratch);
+            canvas.addEventListener('touchmove', scratch);
+
+            function checkScratch() {
+                clearedPixels++;
+                if(clearedPixels > 150) { // Simple threshold check
+                   showPage(10);
+                }
+            }
+        }
+
+        function dinoRequest() {
+            song.pause(); baby.play();
+            bubble.style.width = '200px';
+            bubble.innerHTML = `Kuk, birthday tax! 🎤 <br> Sing for me? <br><br> I want to hear the song I heard the first time... u remember? <br> <button onclick="closeDino()" style="background:#FF1493; color:white; border:none; padding:5px; border-radius:5px; margin-top:5px; cursor:pointer;">Okay!</button>`;
+        }
+
+        function closeDino() { baby.pause(); baby.currentTime=0; song.play(); bubble.style.width = '180px'; bubble.innerText = "Happy Birthday!"; }
+
+        function createFloating() {
+            const syms = ['✨', '🍊', '❤️'];
+            for(let i=0; i<20; i++) {
+                const e = document.createElement('div'); e.className='floating'; 
+                e.innerText= syms[Math.floor(Math.random()*syms.length)];
+                e.style.left=Math.random()*100+"vw"; e.style.top="-50px"; document.body.appendChild(e);
+                gsap.to(e, {y:window.innerHeight+100, duration:Math.random()*5+5, repeat:-1, delay:Math.random()*5});
+            }
+        }
     </script>
 </body>
 </html>
